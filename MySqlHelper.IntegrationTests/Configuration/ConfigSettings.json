@@ -1,0 +1,3 @@
+{
+  "ConnectionString": "server=localhost;uid=root;pwd=root;database=mysql_helper;port=3306;Pooling=True; Allow Zero Datetime=True;Convert Zero Datetime=True;Persist Security Info=True;Connect Timeout=28800;default command timeout=120;Allow User Variables=True;"
+}

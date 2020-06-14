@@ -1,0 +1,11 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs
+/MySqlHelper/bin
+/MySqlHelper/obj
+/MySqlHelper.IntegrationTests/bin
+/MySqlHelper.IntegrationTests/obj
+/MySqlHelper.UnitTests/bin
+/MySqlHelper.UnitTests/obj
