@@ -5,7 +5,7 @@ namespace MySqlHelper.IntegrationTests.Models
     [Table("books")]
     public class Book
     {
-        [Key]
+        [Key(AutoIncrement = true)]
         public int Id { get; set; }
         public string Title { get; set; }
         public decimal Price { get; set; }

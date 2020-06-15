@@ -39,7 +39,7 @@ namespace MySqlHelper.IntegrationTests.Entity
             Assert.AreEqual(2, books.Count);
             books.ForEach(book =>
             {
-                Assert.True(this.books.Exists(x => IsSameBook(x, book)));
+                Assert.True(this.books.Exists(x => Helper.Comparer.IsSameBook(x, book)));
             });
         }
 
@@ -83,9 +83,9 @@ namespace MySqlHelper.IntegrationTests.Entity
             var books = selectBuilder.Execute();
 
             Assert.AreEqual(1, books.Count);
-            Assert.IsTrue(IsSameBook(book, books.First()));
+            Assert.IsTrue(Helper.Comparer.IsSameBook(book, books.First()));
             Assert.AreEqual(book.PublisherId, book.Publisher.Id);
-            Assert.IsTrue(IsSamePublisher(book.Publisher, books.First().Publisher));
+            Assert.IsTrue(Helper.Comparer.IsSamePublisher(book.Publisher, books.First().Publisher));
         }
 
 
@@ -131,8 +131,21 @@ namespace MySqlHelper.IntegrationTests.Entity
         [Test]
         public void SelectCountRegisterPerAuthor()
         {
-            // TODO
-            Assert.Fail();
+            var book = this.books.First();
+            var selectBuilder = entityFactory
+                .CreateSelectBuilder<Book>()
+                .WithJoin(
+                    JoinEnum.LeftJoin,
+                    GetTableName<Book>(),
+                    GetTableName<Publisher>(),
+                    (GetColumnName<Book>(nameof(Book.PublisherId)), GetColumnName<Publisher>(nameof(Publisher.Id))))
+                .WithWhere<Publisher>(new WhereQueryEquals(GetColumnName<Publisher>(nameof(Publisher.Name)), book.Publisher.Name));
+
+            var books = selectBuilder.Execute();
+
+            Assert.AreEqual(1, books.Count);
+            Assert.IsTrue(Helper.Comparer.IsSameBook(book, books.First()));
+            Assert.IsTrue(Helper.Comparer.IsSamePublisher(book.Publisher, books.First().Publisher));
         }
 
         private void SetDefaultRegisters()
@@ -173,24 +186,8 @@ namespace MySqlHelper.IntegrationTests.Entity
 
         private void InsertDataForTests()
         {
-            entityFactory.Insert(publishers);
-            entityFactory.Insert(books);
-        }
-
-        private static bool IsSameBook(Book book1, Book book2)
-        {
-            return
-                book1.Id.Equals(book2.Id)
-                && book1.Title.Equals(book2.Title)
-                && book1.Price.Equals(book2.Price)
-                && book1.PublisherId.Equals(book2.PublisherId);
-        }
-
-        private static bool IsSamePublisher(Publisher publisher1, Publisher publisher2)
-        {
-            return
-                publisher1.Id.Equals(publisher2.Id)
-                && publisher1.Name.Equals(publisher2.Name);
+            entityFactory.InsertMultiples(publishers);
+            entityFactory.InsertMultiples(books);
         }
     }
 }

@@ -36,6 +36,8 @@ namespace MySqlHelper.Utils
                     return DoubleFormat(doubleValue);
                 case float floatValue:
                     return FloatFormat(floatValue);
+                case decimal decimalValue:
+                    return DecimalFormat(decimalValue);
                 case DateTime dateValue:
                     return DateTimeFormat(dateValue);
                 default:
@@ -59,6 +61,11 @@ namespace MySqlHelper.Utils
         }
 
         private static string FloatFormat(float value)
+        {
+            return value.ToString(CultureInfo.CreateSpecificCulture("en-US"));
+        }
+
+        private static string DecimalFormat(decimal value)
         {
             return value.ToString(CultureInfo.CreateSpecificCulture("en-US"));
         }

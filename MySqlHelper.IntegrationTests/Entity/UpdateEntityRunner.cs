@@ -1,7 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using MySqlHelper.Entity;
+using MySqlHelper.IntegrationTests.Configuration;
+using MySqlHelper.IntegrationTests.Models;
+using MySqlHelper.QueryBuilder.Components.WhereQuery;
 using NUnit.Framework;
+using System.Linq;
+using static MySqlHelper.Attributes.ColumnAttribute;
 
 namespace MySqlHelper.IntegrationTests.Entity
 {
@@ -9,27 +12,42 @@ namespace MySqlHelper.IntegrationTests.Entity
     public class UpdateEntityRunner
     {
         [Test]
-        public void UpdateAllRegisters()
+        public void UpdateByModel()
         {
-            Assert.Fail();
-        }
+            // Arrange
+            var config = new ConfigurationSettings();
+            var entityFactory = new EntityFactory(config.ConnectionString);
+            var book = new Book
+            {
+                Title = "Book Test new",
+                Price = 1.99m
+            };
+            entityFactory.Insert(book);
 
-        [Test]
-        public void UpdateRegisterById()
-        {
-            Assert.Fail();
-        }
+            // Check auto genereted id
+            Assert.AreNotEqual(0, book.Id);
 
-        [Test]
-        public void UpdateRegisterByField()
-        {
-            Assert.Fail();
-        }
+            var selectBuilder = entityFactory.CreateSelectBuilder<Book>()
+                .WithWhere(new WhereQueryEquals(GetColumnName<Book>(nameof(Book.Id)), book.Id));
 
-        [Test]
-        public void UpdateRegisterWithLeftJoin()
-        {
-            Assert.Fail();
+
+            var books = selectBuilder.Execute();
+            Assert.AreEqual(1, books.Count);
+            Assert.IsTrue(Helper.Comparer.IsSameBook(book, books.First()));
+
+            book.Price = 3.99m;
+            book.Title = "Book Test update";
+
+            // Act
+            entityFactory.Update(book);
+
+            // Assert
+            selectBuilder = entityFactory.CreateSelectBuilder<Book>()
+                .WithWhere(new WhereQueryEquals(GetColumnName<Book>(nameof(Book.Id)), book.Id));
+
+            books = selectBuilder.Execute();
+            Assert.AreEqual(1, books.Count);
+            Assert.IsTrue(Helper.Comparer.IsSameBook(book, books.First()));
         }
     }
 }

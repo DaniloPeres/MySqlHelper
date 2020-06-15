@@ -12,32 +12,7 @@ namespace MySqlHelper.Entity
     {
         public static void Delete<T>(string connectionString, T entity) where T : new()
         {
-            var properties = typeof(T).GetProperties().ToList();
-            var keys = properties
-                .FindAll(property => Attribute.IsDefined(property, typeof(KeyAttribute)))
-                .Select(property => (property.Name, property.GetValue(entity))).ToList();
-            
-            if (!keys.Any())
-                throw new Exception($"The entity model '{typeof(T)}' must have at least 1 key.");
-
-            WhereQueryCondition condition = null;
-            var wheres = new List<(WhereQuerySyntaxEnum syntax, WhereQueryCondition condition)>();
-
-            var isFirst = true;
-            keys.ForEach(key =>
-            {
-                var equalsCondition = new WhereQueryEquals(key.Name, key.Item2);
-                if (isFirst)
-                {
-                    condition = equalsCondition;
-                    isFirst = false;
-                }
-                else
-                {
-                    wheres.Add((WhereQuerySyntaxEnum.And, equalsCondition));
-                }
-
-            });
+            var (condition, wheres) = KeyAttribute.GetKeysQueryWhere(entity);
 
             var deleteQueryBuilder = new DeleteQueryBuilder()
                 .WithWhere(condition, wheres.ToArray());

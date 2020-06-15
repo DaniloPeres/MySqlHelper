@@ -13,17 +13,6 @@ namespace MySqlHelper.DataBase
             ConnectionString = connectionString;
         }
 
-        public MySqlDataReader ExecuteReader(string strQuery, List<MySqlParameter> parameters = null)
-        {
-            using (var con = new MySqlConnection(ConnectionString))
-            {
-                con.Open();
-                var cmd = new MySqlCommand(strQuery, con);
-                parameters?.ForEach(parameter => cmd.Parameters.Add(parameter));
-                return cmd.ExecuteReader();
-            }
-        }
-
         public static void ExecuteNonQuery(string connectionString, string strQuery, List<MySqlParameter> parameters = null)
         {
             using (var con = new MySqlConnection(connectionString))
@@ -42,14 +31,15 @@ namespace MySqlHelper.DataBase
             }
         }
 
-        public Result<int> GetLastInsertId()
+        public static int GetLastInsertId(string connectionString)
         {
-            using (var myDrr = ExecuteReader("SELECT LAST_INSERT_ID()"))
+            var query = "SELECT LAST_INSERT_ID()";
+            using (var exe = new DataBaseExecuteReader(connectionString, query))
             {
-                if (myDrr.Read())
-                    return myDrr.GetInt(0);
+                if (exe.DataReader.Read())
+                    return exe.DataReader.GetInt(0);
             }
-            return Result.Failure<int>("Error to get Last Insert Id, no data returned.");
+            return 0;
         }
     }
 }
