@@ -9,11 +9,38 @@
 
 - [Entity Model to MySQL](#entity-model-to-mysql)
   - [Select all books](#select-all-books)
-- [Reporting Bugs and Issues](#reporting-bugs-and-issues)
-- [Reporting Security Issues and Responsible Disclosure](#reporting-security-issues-and-responsible-disclosure)
-- [Contributing](#contributing)
-- [Platform, Build and Deployment Status](#platform-build-and-deployment-status)
-- [License](#license)
+  - [Select a book by ID](#select-a-book-by-id)
+  - [Select books by complex filter (Price is lower than 10.00 and the Title contains 'Paris')](#select-books-by-complex-filter)
+  - [Select all books with sub entity model Publisher (Left Join)](#Select-all-books-with-sub-entity-model-publisher)
+  - [Select all books only the column Book.Title and Publisher.Name](#select-all-books-only-the-columns)
+  - [Select all books in order descendent by ID](#select-all-books-in-order-descendent-by-id)
+  - [Select books filter by Publisher Name](#select-books-filter-by-publisher-name)
+  - [Insert a register by entity model](#insert-a-register-by-entity-model)
+  - [Insert multiple registers by entity models](#insert-multiple-registers-by-entity-models)
+  - [Update a register by entity model](#update-a-register-by-entity-model)
+  - [Delete a register by entity model](#delete-a-register-by-entity-model)
+- [Building Queries](#building-queries)
+  - [Select all books using model](#select-all-books-using-model)
+  - [Select all books without model](#select-all-books-without-model)
+  - [Select all books for specific columns using model](#select-all-books-for-specific-columns-using-modelselect-all-books-for-specific-columns-using-model)
+  - [Select all books for specific columns without model](#select-all-books-for-specific-columns-without-model)
+  - [Select a book by ID using model](#select-a-book-by-id-using-model)
+  - [Select a book by ID without model](#select-a-book-by-id-without-model)
+  - [Select books with 2 conditions using model](#select-books-with-2-conditions-using-model)
+  - [Select books with 2 conditions without model](#select-books-with-2-conditions-without-model)
+  - [Select books with complex 'WHERE' using model](#select-books-with-complex-where-using-model)
+  - [Select books with complex 'WHERE' without model](#select-books-with-complex-where-without-model)
+  - [Select books with 'LIKE' condition](#select-books-with-like-condition)
+  - [Select books with 'between' condition](#select-books-with-between-condition)
+  - [Select books with 'IN' condition](#select-books-with-in-condition)
+  - [Select books with 'greater' condition](#select-books-with-greater-condition)
+  - [Select books with 'LEFT JOIN' condition](#select-books-with-left-join-condition)
+  - [Select books with 'GROUP BY' condition](#select-books-with-group-by-condition)
+  - [Select books with 'ORDER BY' condition](#select-books-with-order-by-condition)
+  - [Insert](#insert)
+  - [Delete all books](#delete-all-books) 
+  - [Delete the book by ID](#delete-the-book-by-id)
+  - [Update](#update)
 
 ## Entity Model to MySQL
 
@@ -86,7 +113,7 @@ var selectBuilder = entityFactory
 IList<Book> books = selectBuilder.Execute();
 ```
 
-#### Select all books only the column Book.Title and Publisher.Name:
+#### Select all books only the columns Book.Title and Publisher.Name:
 
 ```csharp
 var entityFactory = new EntityFactory(<connectionString>);
@@ -212,7 +239,7 @@ book.Title = "Book Test update";
 entityFactory.Update(book);
 ```
 
-### Update
+### Delete a register by entity model:
 ```csharp
 var entityFactory = new EntityFactory(<connectionString>);
 var book = new Book
@@ -309,7 +336,7 @@ string query = selectQueryBuilder.Build("books");
 // query is going to be: "SELECT * FROM `books` WHERE `Id` = 1 OR `Id` = 2"
 ```
 
-#### Select books with complex 'where' using model:
+#### Select books with complex 'WHERE' using model:
 ```csharp
 var selectQueryBuilder = new SelectQueryBuilder()
   .WithWhere(new WhereQueryBetween(GetColumnName<Book>(nameof(Book.Price)), 50, 100))
@@ -345,7 +372,7 @@ string query = selectQueryBuilder.Build<Book>();
 // query is going to be: "SELECT * FROM `books` WHERE `Price` BETWEEN 50 AND 100"
 ```
 
-#### Select books with 'between' condition:
+#### Select books with 'BETWEEN' condition:
 ```csharp
 var selectQueryBuilder = new SelectQueryBuilder()
   .WithWhere(new WhereQueryLike(GetColumnName<Book>(nameof(Book.Title)), "%C#%"));
