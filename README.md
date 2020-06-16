@@ -37,10 +37,10 @@
   - [Select books with 'LEFT JOIN' condition](#select-books-with-left-join-condition)
   - [Select books with 'GROUP BY' condition](#select-books-with-group-by-condition)
   - [Select books with 'ORDER BY' condition](#select-books-with-order-by-condition)
-  - [Insert](#insert)
+  - [Insert query builder](#insert-query-builder)
   - [Delete all books](#delete-all-books) 
   - [Delete the book by ID](#delete-the-book-by-id)
-  - [Update](#update)
+  - [Update query builder](#update-query-builder)
 
 ## Entity Model to MySQL
 
@@ -439,7 +439,7 @@ string query = selectQueryBuilder.Build<Book>();
 // query is going to be: "SELECT * FROM `books` ORDER BY `Price` DESC, `Title` ASC"
 ```
 
-### Insert
+### Insert query builder
 ```csharp
 var fields = new Dictionary<string, object>
 {
@@ -473,7 +473,7 @@ string query = deleteQueryBuilder.Build<Book>();
 // query is going to be: "DELETE FROM `books` WHERE `Id` = 1"
 ```
 
-### Update
+### Update query builder
 ```csharp
 var fields = new Dictionary<string, object>
 {
