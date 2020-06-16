@@ -10,9 +10,9 @@
 - [Entity Model to MySQL](#entity-model-to-mysql)
   - [Select all books](#select-all-books)
   - [Select a book by ID](#select-a-book-by-id)
-  - [Select books by complex filter (Price is lower than 10.00 and the Title contains 'Paris')](#select-books-by-complex-filter)
-  - [Select all books with sub entity model Publisher (Left Join)](#Select-all-books-with-sub-entity-model-publisher)
-  - [Select all books only the column Book.Title and Publisher.Name](#select-all-books-only-the-columns)
+  - [Select books by complex filter (Price is lower than 10.00 and the Title contains 'Paris')](#select-books-by-complex-filter-price-is-lower-than-1000-and-the-title-contains-paris)
+  - [Select all books with sub entity model Publisher (Left Join)](#select-all-books-with-sub-entity-model-publisher-left-join)
+  - [Select all books only the column Book.Title and Publisher.Name](#select-all-books-only-the-columns-booktitle-and-publishername)
   - [Select all books in order descendent by ID](#select-all-books-in-order-descendent-by-id)
   - [Select books filter by Publisher Name](#select-books-filter-by-publisher-name)
   - [Insert a register by entity model](#insert-a-register-by-entity-model)
@@ -88,7 +88,7 @@ var selectBuilder = entityFactory
 IList<Book> books = selectBuilder.Execute();
 ```
 
-#### Select books by complex filter (Price is lower than 10.00 and the Title contains 'Paris':
+#### Select books by complex filter (Price is lower than 10.00 and the Title contains 'Paris'):
 
 ```csharp
 var entityFactory = new EntityFactory(<connectionString>);
