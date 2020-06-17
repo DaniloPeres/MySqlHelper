@@ -497,7 +497,7 @@ string query = updateQueryBuilder.Build<Book>();
 ## Attributes for the model
 
 ### Table Attribute
-<b>Attribute Targets:</b> Class
+<b>Attribute Targets:</b> Class<br/>
 <b>Parameters:</b>
   - Name
 
