@@ -499,7 +499,7 @@ string query = updateQueryBuilder.Build<Book>();
 ### Table Attribute
 <b>Attribute Targets:</b> Class
 <b>Parameters:</b>
-  - Name
+  - Name<br/>
 <b>Description:</b> Set the table name from this model
 <b>Examples:</b>
 ```csharp
@@ -512,7 +512,7 @@ public class Book
 <b>Attribute Targets:</b> Property<br/>
 <b>Parameters:</b>
   - Name
-  - Type
+  - Type<br/>
 <b>Description:</b> Set column properties<br/>
 <b>Examples:</b>
 ```csharp
@@ -529,7 +529,7 @@ public DateTime Time { get; set; }
 ### Key Attribute
 <b>Attribute Targets:</b> Property<br/>
 <b>Parameters:</b>
-  - AutoIncrement
+  - AutoIncrement<br/>
 <b>Description:</b> Set the column as primary key<br/>
 <b>Examples:</b>
 ```csharp
