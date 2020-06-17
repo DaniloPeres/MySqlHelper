@@ -41,6 +41,11 @@
   - [Delete all books](#delete-all-books) 
   - [Delete the book by ID](#delete-the-book-by-id)
   - [Update query builder](#update-query-builder)
+- [Attributes for the model](#attributes-for-the-model)
+  - [Table Attribute](#table-attribute)
+  - [Column Attribute](#column-attribute)
+  - [Key Attribute](#key-attribute)
+  - [Foreign Key Model Attribute](#foreign-key-model-attribute)
 
 ## Entity Model to MySQL
 
@@ -489,14 +494,71 @@ string query = updateQueryBuilder.Build<Book>();
 // query is going to be: "UPDATE `books` SET `Title` = 'Essential C#', `Price` = 20.99 WHERE `Id` = 1"
 ```
 
-## Attributes for model
+## Attributes for the model
 
-| Attribute Targets | Name | Parameters | Examples | Description |
-| --- | --- | --- | --- |
-| Class | Table | Name | \[Table("books")\] | Set the table name from this model |
-| Property | Column | Name<br />Column Type Enum | \[Column("ID")\]<br/>\[Column("Date", ColumnTypeEnum.Date)\]<br />[Column(ColumnTypeEnum.Date)] | Set column properties |
-| Property | Key | AutoIncrement | \[Key\]<br />\[Key(AutoIncrement = true)\] | Set the column as primary key |
-| Property | ForeignKeyModel | - | \[ForeignKeyModel\] | Set a class as model from another table |
+### Table Attribute
+<b>Attribute Targets:</b> Class
+
+<b>Parameters:</b>
+  - Name
+
+<b>Description:</b> Set the table name from this model
+
+<b>Examples:</b>
+```csharp
+[Table("books")]
+public class Book
+{...}
+```
+
+### Column Attribute
+<b>Attribute Targets:</b> Property
+
+<b>Parameters:</b>
+  - Name
+  - Type
+
+<b>Description:</b> Set column properties
+
+<b>Examples:</b>
+```csharp
+[Column("ID")]
+public int Id { get; set; }
+
+[Column("Date", ColumnTypeEnum.Date)]
+public DateTime Date { get; set; }
+
+[Column(ColumnTypeEnum.Time)]
+public DateTime Time { get; set; }
+```
+
+### Key Attribute
+<b>Attribute Targets:</b> Property
+
+<b>Parameters:</b>
+  - AutoIncrement
+
+<b>Description:</b> Set the column as primary key
+
+<b>Examples:</b>
+```csharp
+[Key(AutoIncrement = true)]
+public int Id { get; set; }
+
+[Key]
+public int Id { get; set; }
+```
+
+### Foreign Key Model Attribute
+<b>Attribute Targets:</b> Property
+
+<b>Description:</b> Set a class as model from another table
+
+<b>Examples:</b>
+```csharp
+[ForeignKeyModel]
+public Publisher Publisher { get; set; }
+```
 
 ## License
 
