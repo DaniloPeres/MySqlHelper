@@ -3,7 +3,7 @@
 </p>
 
 # MySqlHelper
-<b>MySQL Helper</b> is a extension of MySQL to build queries or using entity models to interact with the database
+<b>MySQL Helper</b> is an extension of MySQL to build queries or using entity models to interact with the database
 
 ## Table of Contents
 
