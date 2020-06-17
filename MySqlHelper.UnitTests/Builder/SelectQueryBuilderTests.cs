@@ -20,7 +20,7 @@ namespace MySqlHelper.UnitTests.Builder
             var selectQueryBuilder = new SelectQueryBuilder();
 
             // Act
-            var query = selectQueryBuilder.Build<Book>();
+            var query = selectQueryBuilder.Build("books");
 
             // Assert
             Assert.AreEqual(queryExpected, query);

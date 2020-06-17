@@ -115,7 +115,7 @@ namespace MySqlHelper.IntegrationTests.Entity
         }
 
         [Test]
-        public void SelectRegisterWithOrderByDesc()
+        public void SelectRegistersWithOrderByDesc()
         {
             // TODO finish it, make insert, test and delete
             var selectBuilder = entityFactory
@@ -129,7 +129,7 @@ namespace MySqlHelper.IntegrationTests.Entity
         }
 
         [Test]
-        public void SelectCountRegisterPerAuthor()
+        public void SelectRegistersPerPublisherName()
         {
             var book = this.books.First();
             var selectBuilder = entityFactory
