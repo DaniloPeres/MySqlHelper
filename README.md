@@ -497,3 +497,7 @@ string query = updateQueryBuilder.Build<Book>();
 | Property | Column | Name<br />Column Type Enum | \[Column("ID")\]<br/>\[Column("Date", ColumnTypeEnum.Date)\]<br />[Column(ColumnTypeEnum.Date)] | Set column properties |
 | Property | Key | AutoIncrement | \[Key\]<br />\[Key(AutoIncrement = true)\] | Set the column as primary key |
 | Property | ForeignKeyModel | - | \[ForeignKeyModel\] | Set a class as model from another table |
+
+## License
+
+MIT
