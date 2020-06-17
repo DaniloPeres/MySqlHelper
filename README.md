@@ -498,12 +498,9 @@ string query = updateQueryBuilder.Build<Book>();
 
 ### Table Attribute
 <b>Attribute Targets:</b> Class
-
 <b>Parameters:</b>
   - Name
-
 <b>Description:</b> Set the table name from this model
-
 <b>Examples:</b>
 ```csharp
 [Table("books")]
@@ -512,14 +509,11 @@ public class Book
 ```
 
 ### Column Attribute
-<b>Attribute Targets:</b> Property
-
+<b>Attribute Targets:</b> Property<br/>
 <b>Parameters:</b>
   - Name
   - Type
-
-<b>Description:</b> Set column properties
-
+<b>Description:</b> Set column properties<br/>
 <b>Examples:</b>
 ```csharp
 [Column("ID")]
@@ -533,13 +527,10 @@ public DateTime Time { get; set; }
 ```
 
 ### Key Attribute
-<b>Attribute Targets:</b> Property
-
+<b>Attribute Targets:</b> Property<br/>
 <b>Parameters:</b>
   - AutoIncrement
-
-<b>Description:</b> Set the column as primary key
-
+<b>Description:</b> Set the column as primary key<br/>
 <b>Examples:</b>
 ```csharp
 [Key(AutoIncrement = true)]
@@ -550,10 +541,8 @@ public int Id { get; set; }
 ```
 
 ### Foreign Key Model Attribute
-<b>Attribute Targets:</b> Property
-
-<b>Description:</b> Set a class as model from another table
-
+<b>Attribute Targets:</b> Property<br/>
+<b>Description:</b> Set a class as model from another table<br/>
 <b>Examples:</b>
 ```csharp
 [ForeignKeyModel]
