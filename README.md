@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="http://daniloperes.com/MySQL_Helper_Logo.svg" alt="MySQL Helper logo" width="120" height="120">
+  <img src="http://daniloperes.com/MySQL_Helper_Logo_256.png" alt="MySQL Helper logo" width="120" height="120">
 </p>
 
 # MySqlHelper
