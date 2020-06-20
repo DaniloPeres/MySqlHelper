@@ -260,7 +260,7 @@ entityFactory.Insert(book);
 // Change the entity model
 book.Title = "Book Test update";
 
-// Update it in the database
+// Update only the title in the database
 entityFactory.Update(book, nameof(Book.Title));
 ```
 
