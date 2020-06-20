@@ -18,6 +18,7 @@
   - [Insert a register by entity model](#insert-a-register-by-entity-model)
   - [Insert multiple registers by entity models](#insert-multiple-registers-by-entity-models)
   - [Update a register by entity model](#update-a-register-by-entity-model)
+  - [Update register only specific fields by entity model](#update-register-only-specific-fields-by-entity-model)
   - [Delete a register by entity model](#delete-a-register-by-entity-model)
 - [Building Queries](#building-queries)
   - [Select all books using model](#select-all-books-using-model)
@@ -242,6 +243,25 @@ book.Title = "Book Test update";
 
 // Update it in the database
 entityFactory.Update(book);
+```
+
+#### Update register only specific fields by entity model:
+```csharp
+var entityFactory = new EntityFactory(<connectionString>);
+var book = new Book
+{
+    Title = "Book Test new",
+    Price = 1.99m
+};
+
+// Insert the register
+entityFactory.Insert(book);
+
+// Change the entity model
+book.Title = "Book Test update";
+
+// Update it in the database
+entityFactory.Update(book, nameof(Book.Title));
 ```
 
 ### Delete a register by entity model:
