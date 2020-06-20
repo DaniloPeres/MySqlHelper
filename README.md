@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="http://daniloperes.com/MySQL_Helper_Logo.svg" alt="MySQL Helper logo" width="120" height="120">
+  <img src="http://daniloperes.com/MySQL_Helper_Logo_256.png" alt="MySQL Helper logo" width="120" height="120">
 </p>
 
 # MySqlHelper
@@ -18,6 +18,7 @@
   - [Insert a register by entity model](#insert-a-register-by-entity-model)
   - [Insert multiple registers by entity models](#insert-multiple-registers-by-entity-models)
   - [Update a register by entity model](#update-a-register-by-entity-model)
+  - [Update register only specific fields by entity model](#update-register-only-specific-fields-by-entity-model)
   - [Delete a register by entity model](#delete-a-register-by-entity-model)
 - [Building Queries](#building-queries)
   - [Select all books using model](#select-all-books-using-model)
@@ -89,7 +90,7 @@ var searchId = 1;
 var entityFactory = new EntityFactory(<connectionString>);
 var selectBuilder = entityFactory
    .CreateSelectBuilder<Book>()
-   .WithWhere(new WhereQueryEquals(GetColumnName<Book>(nameof(Book.Id)), searchId));
+   .WithWhere(new WhereQueryEquals(ColumnAttribute.GetColumnName<Book>(nameof(Book.Id)), searchId));
 IList<Book> books = selectBuilder.Execute();
 ```
 
@@ -99,8 +100,8 @@ IList<Book> books = selectBuilder.Execute();
 var entityFactory = new EntityFactory(<connectionString>);
 var selectBuilder = entityFactory
    .CreateSelectBuilder<Book>()
-   .WithWhere(new WhereQueryLowerThan(GetColumnName<Book>(nameof(Book.Price)), 10d),
-      (WhereQuerySyntaxEnum.And, new WhereQueryLike(GetColumnName<Book>(nameof(Book.Title)), "%Paris%")));
+   .WithWhere(new WhereQueryLowerThan(ColumnAttribute.GetColumnName<Book>(nameof(Book.Price)), 10d),
+      (WhereQuerySyntaxEnum.And, new WhereQueryLike(ColumnAttribute.GetColumnName<Book>(nameof(Book.Title)), "%Paris%")));
 IList<Book> books = selectBuilder.Execute();
 ```
 
@@ -112,9 +113,9 @@ var selectBuilder = entityFactory
    .CreateSelectBuilder<Book>()
    .WithJoin(
           JoinEnum.LeftJoin,
-          GetTableName<Book>(),
-          GetTableName<Publisher>(),
-          (GetColumnName<Book>(nameof(Book.PublisherId)), GetColumnName<Publisher>(nameof(Publisher.Id)))));
+          TableAttribute.GetTableName<Book>(),
+          TableAttribute.GetTableName<Publisher>(),
+          (ColumnAttribute.GetColumnName<Book>(nameof(Book.PublisherId)), ColumnAttribute.GetColumnName<Publisher>(nameof(Publisher.Id)))));
 IList<Book> books = selectBuilder.Execute();
 ```
 
@@ -124,13 +125,13 @@ IList<Book> books = selectBuilder.Execute();
 var entityFactory = new EntityFactory(<connectionString>);
 var selectBuilder = entityFactory
    .CreateSelectBuilder<Book>()
-   .WithColumns<Book>(GetColumnName<Book>(nameof(Book.Title)))
-   .WithColumns<Publisher>(GetColumnName<Publisher>(nameof(Publisher.Name)))
+   .WithColumns<Book>(ColumnAttribute.GetColumnName<Book>(nameof(Book.Title)))
+   .WithColumns<Publisher>(ColumnAttribute.GetColumnName<Publisher>(nameof(Publisher.Name)))
    .WithJoin(
           JoinEnum.LeftJoin,
-          GetTableName<Book>(),
-          GetTableName<Publisher>(),
-          (GetColumnName<Book>(nameof(Book.PublisherId)), GetColumnName<Publisher>(nameof(Publisher.Id)))));
+          TableAttribute.GetTableName<Book>(),
+          TableAttribute.GetTableName<Publisher>(),
+          (ColumnAttribute.GetColumnName<Book>(nameof(Book.PublisherId)), ColumnAttribute.GetColumnName<Publisher>(nameof(Publisher.Id)))));
 IList<Book> books = selectBuilder.Execute();
 ```
 
@@ -140,7 +141,7 @@ IList<Book> books = selectBuilder.Execute();
 var entityFactory = new EntityFactory(<connectionString>);
 var selectBuilder = entityFactory
    .CreateSelectBuilder<Book>()
-   .WithOrderBy((GetColumnName<Book>(nameof(Book.Id)), OrderBySorted.Desc));
+   .WithOrderBy((ColumnAttribute.GetColumnName<Book>(nameof(Book.Id)), OrderBySorted.Desc));
 IList<Book> books = selectBuilder.Execute();
 ```
 
@@ -152,10 +153,10 @@ var selectBuilder = entityFactory
    .CreateSelectBuilder<Book>()
    .WithJoin(
        JoinEnum.LeftJoin,
-       GetTableName<Book>(),
-       GetTableName<Publisher>(),
-       (GetColumnName<Book>(nameof(Book.PublisherId)), GetColumnName<Publisher>(nameof(Publisher.Id))))
-   .WithWhere<Publisher>(new WhereQueryEquals(GetColumnName<Publisher>(nameof(Publisher.Name)), "Publisher Name"));
+       TableAttribute.GetTableName<Book>(),
+       TableAttribute.GetTableName<Publisher>(),
+       (ColumnAttribute.GetColumnName<Book>(nameof(Book.PublisherId)), ColumnAttribute.GetColumnName<Publisher>(nameof(Publisher.Id))))
+   .WithWhere<Publisher>(new WhereQueryEquals(ColumnAttribute.GetColumnName<Publisher>(nameof(Publisher.Name)), "Publisher Name"));
 IList<Book> books = selectBuilder.Execute();
 ```
 
@@ -244,6 +245,25 @@ book.Title = "Book Test update";
 entityFactory.Update(book);
 ```
 
+#### Update register only specific fields by entity model:
+```csharp
+var entityFactory = new EntityFactory(<connectionString>);
+var book = new Book
+{
+    Title = "Book Test new",
+    Price = 1.99m
+};
+
+// Insert the register
+entityFactory.Insert(book);
+
+// Change the entity model
+book.Title = "Book Test update";
+
+// Update only the title in the database
+entityFactory.Update(book, nameof(Book.Title));
+```
+
 ### Delete a register by entity model:
 ```csharp
 var entityFactory = new EntityFactory(<connectionString>);
@@ -285,7 +305,7 @@ string query = selectQueryBuilder.Build("books");
 #### Select all books for specific columns using model:
 ```csharp
 var selectQueryBuilder = new SelectQueryBuilder()
-  .WithColumns(GetColumnName<Book>(nameof(Book.Title)), GetColumnName<Book>(nameof(Book.Price)));
+  .WithColumns(ColumnAttribute.GetColumnName<Book>(nameof(Book.Title)), ColumnAttribute.GetColumnName<Book>(nameof(Book.Price)));
 string query = selectQueryBuilder.Build<Book>();
 
 // query is going to be: "SELECT `Title`, `Price` FROM `books`"
@@ -304,7 +324,7 @@ string query = selectQueryBuilder.Build("books");
 #### Select a book by ID using model:
 ```csharp
 var selectQueryBuilder = new SelectQueryBuilder()
-  .WithWhere(new WhereQueryEquals(GetColumnName<Book>(nameof(Book.Id)), 1));
+  .WithWhere(new WhereQueryEquals(ColumnAttribute.GetColumnName<Book>(nameof(Book.Id)), 1));
 string query = selectQueryBuilder.Build<Book>();
 
 // query is going to be: "SELECT * FROM `books` WHERE `Id` = 1"
@@ -323,8 +343,8 @@ string query = selectQueryBuilder.Build("books");
 ```csharp
 var selectQueryBuilder = new SelectQueryBuilder()
   .WithWhere(
-      new WhereQueryEquals(GetColumnName<Book>(nameof(Book.Id)), 1),
-      (WhereQuerySyntaxEnum.Or, new WhereQueryEquals(GetColumnName<Book>(nameof(Book.Id)), 2)));
+      new WhereQueryEquals(ColumnAttribute.GetColumnName<Book>(nameof(Book.Id)), 1),
+      (WhereQuerySyntaxEnum.Or, new WhereQueryEquals(ColumnAttribute.GetColumnName<Book>(nameof(Book.Id)), 2)));
 string query = selectQueryBuilder.Build<Book>();
 
 // query is going to be: "SELECT * FROM `books` WHERE `Id` = 1 OR `Id` = 2"
@@ -344,12 +364,12 @@ string query = selectQueryBuilder.Build("books");
 #### Select books with complex 'WHERE' using model:
 ```csharp
 var selectQueryBuilder = new SelectQueryBuilder()
-  .WithWhere(new WhereQueryBetween(GetColumnName<Book>(nameof(Book.Price)), 50, 100))
+  .WithWhere(new WhereQueryBetween(ColumnAttribute.GetColumnName<Book>(nameof(Book.Price)), 50, 100))
   .WithWhereAppend(
       WhereQuerySyntaxEnum.And,
-      new WhereQueryLike(GetColumnName<Book>(nameof(Book.Title)), "%C#%"),
+      new WhereQueryLike(ColumnAttribute.GetColumnName<Book>(nameof(Book.Title)), "%C#%"),
       (WhereQuerySyntaxEnum.Or,
-          new WhereQueryLike(GetColumnName<Book>(nameof(Book.Title)), "%MySql%")));
+          new WhereQueryLike(ColumnAttribute.GetColumnName<Book>(nameof(Book.Title)), "%MySql%")));
 string query = selectQueryBuilder.Build<Book>();
 
 // query is going to be: "SELECT * FROM `books` WHERE (`Price` BETWEEN 50 AND 100) AND (`Title` LIKE '%C#%' OR `Title` LIKE '%MySql%')"
@@ -371,7 +391,7 @@ string query = selectQueryBuilder.Build("books");
 #### Select books with 'LIKE' condition:
 ```csharp
 var selectQueryBuilder = new SelectQueryBuilder()
-  .WithWhere(new WhereQueryBetween(GetColumnName<Book>(nameof(Book.Price)), 50, 100));
+  .WithWhere(new WhereQueryBetween(ColumnAttribute.GetColumnName<Book>(nameof(Book.Price)), 50, 100));
 string query = selectQueryBuilder.Build<Book>();
 
 // query is going to be: "SELECT * FROM `books` WHERE `Price` BETWEEN 50 AND 100"
@@ -380,7 +400,7 @@ string query = selectQueryBuilder.Build<Book>();
 #### Select books with 'BETWEEN' condition:
 ```csharp
 var selectQueryBuilder = new SelectQueryBuilder()
-  .WithWhere(new WhereQueryLike(GetColumnName<Book>(nameof(Book.Title)), "%C#%"));
+  .WithWhere(new WhereQueryLike(ColumnAttribute.GetColumnName<Book>(nameof(Book.Title)), "%C#%"));
 string query = selectQueryBuilder.Build<Book>();
 
 // query is going to be: "SELECT * FROM `books` WHERE `Title` LIKE '%C#%'"
@@ -389,7 +409,7 @@ string query = selectQueryBuilder.Build<Book>();
 #### Select books with 'IN' condition:
 ```csharp
 var selectQueryBuilder = new SelectQueryBuilder()
-  .WithWhere(new WhereQueryIn(GetColumnName<Book>(nameof(Book.Id)), 1, 2, 3));
+  .WithWhere(new WhereQueryIn(ColumnAttribute.GetColumnName<Book>(nameof(Book.Id)), 1, 2, 3));
 string query = selectQueryBuilder.Build<Book>();
 
 // query is going to be: "SELECT * FROM `books` WHERE `Id` IN (1,2,3)"
@@ -398,7 +418,7 @@ string query = selectQueryBuilder.Build<Book>();
 #### Select books with 'greater' condition:
 ```csharp
 var selectQueryBuilder = new SelectQueryBuilder()
-  .WithWhere(new WhereQueryGreaterThan(GetColumnName<Book>(nameof(Book.Price)), 100));
+  .WithWhere(new WhereQueryGreaterThan(ColumnAttribute.GetColumnName<Book>(nameof(Book.Price)), 100));
 string query = selectQueryBuilder.Build<Book>();
 
 // query is going to be: "SELECT * FROM `books` WHERE `Price` > 100"
@@ -407,14 +427,14 @@ string query = selectQueryBuilder.Build<Book>();
 #### Select books with 'LEFT JOIN' condition:
 ```csharp
 var selectQueryBuilder = new SelectQueryBuilder()
-  .WithColumns<Book>(GetColumnName<Book>(nameof(Book.Title)))
-  .WithColumns<Publisher>(GetColumnName<Publisher>(nameof(Publisher.Name)))
+  .WithColumns<Book>(ColumnAttribute.GetColumnName<Book>(nameof(Book.Title)))
+  .WithColumns<Publisher>(ColumnAttribute.GetColumnName<Publisher>(nameof(Publisher.Name)))
   .WithJoin(
       JoinEnum.LeftJoin,
-      GetTableName<Book>(),
-      GetTableName<Publisher>(),
-      (GetColumnName<Book>(nameof(Book.PublisherId)), GetColumnName<Publisher>(nameof(Publisher.Id))))
-  .WithWhere<Book>(new WhereQueryGreaterThan(GetColumnName<Book>(nameof(Book.Price)), 100));
+      TableAttribute.GetTableName<Book>(),
+      TableAttribute.GetTableName<Publisher>(),
+      (ColumnAttribute.GetColumnName<Book>(nameof(Book.PublisherId)), ColumnAttribute.GetColumnName<Publisher>(nameof(Publisher.Id))))
+  .WithWhere<Book>(new WhereQueryGreaterThan(ColumnAttribute.GetColumnName<Book>(nameof(Book.Price)), 100));
 string query = selectQueryBuilder.Build<Book>();
 
 /* query is going to be: 
@@ -428,8 +448,8 @@ string query = selectQueryBuilder.Build<Book>();
 #### Select books with 'GROUP BY' condition:
 ```csharp
 var selectQueryBuilder = new SelectQueryBuilder()
-    .WithColumns("Count(*)", GetColumnName<Book>(nameof(Book.Title)))
-    .WithGroupBy(GetColumnName<Book>(nameof(Book.Price)));
+    .WithColumns("Count(*)", ColumnAttribute.GetColumnName<Book>(nameof(Book.Title)))
+    .WithGroupBy(ColumnAttribute.GetColumnName<Book>(nameof(Book.Price)));
 string query = selectQueryBuilder.Build<Book>();
 
 // query is going to be: "SELECT Count(*), `Title` FROM `books` GROUP BY `Price`"
@@ -438,7 +458,7 @@ string query = selectQueryBuilder.Build<Book>();
 #### Select books with 'ORDER BY' condition:
 ```csharp
 var selectQueryBuilder = new SelectQueryBuilder()
-    .WithOrderBy((GetColumnName<Book>(nameof(Book.Price)), OrderBySorted.Desc), (GetColumnName<Book>(nameof(Book.Title)), OrderBySorted.Asc));
+    .WithOrderBy((ColumnAttribute.GetColumnName<Book>(nameof(Book.Price)), OrderBySorted.Desc), (ColumnAttribute.GetColumnName<Book>(nameof(Book.Title)), OrderBySorted.Asc));
 string query = selectQueryBuilder.Build<Book>();
 
 // query is going to be: "SELECT * FROM `books` ORDER BY `Price` DESC, `Title` ASC"
@@ -448,8 +468,8 @@ string query = selectQueryBuilder.Build<Book>();
 ```csharp
 var fields = new Dictionary<string, object>
 {
-    { GetColumnName<Book>(nameof(Book.Title)), "Essential C#" },
-    { GetColumnName<Book>(nameof(Book.Price)), 20.99d }
+    { ColumnAttribute.GetColumnName<Book>(nameof(Book.Title)), "Essential C#" },
+    { ColumnAttribute.GetColumnName<Book>(nameof(Book.Price)), 20.99d }
 };
 var insertQueryBuilder = new InsertQueryBuilder()
     .WithFields(fields);
@@ -472,7 +492,7 @@ string query = deleteQueryBuilder.Build<Book>();
 #### Delete the book by ID:
 ```csharp
 var deleteQueryBuilder = new DeleteQueryBuilder()
-  .WithWhere(new WhereQueryEquals(GetColumnName<Book>(nameof(Book.Id)), 1));
+  .WithWhere(new WhereQueryEquals(ColumnAttribute.GetColumnName<Book>(nameof(Book.Id)), 1));
 string query = deleteQueryBuilder.Build<Book>();
 
 // query is going to be: "DELETE FROM `books` WHERE `Id` = 1"
@@ -482,12 +502,12 @@ string query = deleteQueryBuilder.Build<Book>();
 ```csharp
 var fields = new Dictionary<string, object>
 {
-    { GetColumnName<Book>(nameof(Book.Title)), "Essential C#" },
-    { GetColumnName<Book>(nameof(Book.Price)), 20.99d }
+    { ColumnAttribute.GetColumnName<Book>(nameof(Book.Title)), "Essential C#" },
+    { ColumnAttribute.GetColumnName<Book>(nameof(Book.Price)), 20.99d }
 };
 var updateQueryBuilder = new UpdateQueryBuilder()
     .WithFields(fields)
-    .WithWhere(new WhereQueryEquals(GetColumnName<Book>(nameof(Book.Id)), 1));
+    .WithWhere(new WhereQueryEquals(ColumnAttribute.GetColumnName<Book>(nameof(Book.Id)), 1));
 
 string query = updateQueryBuilder.Build<Book>();
 
