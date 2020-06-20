@@ -31,13 +31,13 @@ namespace MySqlHelper.DataBase
             }
         }
 
-        public static int GetLastInsertId(string connectionString)
+        public static ulong GetLastInsertId(string connectionString)
         {
             var query = "SELECT LAST_INSERT_ID()";
             using (var exe = new DataBaseExecuteReader(connectionString, query))
             {
                 if (exe.DataReader.Read())
-                    return exe.DataReader.GetInt(0);
+                    return exe.DataReader.GetULong(0);
             }
             return 0;
         }

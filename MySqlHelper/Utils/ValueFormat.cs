@@ -10,6 +10,9 @@ namespace MySqlHelper.Utils
     {
         public static string GenerateFormattedValueForQuery(object value)
         {
+            if (value == null)
+                return "NULL";
+
             var type = value.GetType();
             var attributes = type.GetTypeInfo().GetCustomAttributes(typeof(ColumnAttribute), true);
 
@@ -30,8 +33,22 @@ namespace MySqlHelper.Utils
                     return $"'{StringFormat(stringValue)}'";
                 case bool boolValue:
                     return BoolFormat(boolValue);
+                case byte byteValue:
+                    return NumberFormat(byteValue);
+                case sbyte sbyteValue:
+                    return NumberFormat(sbyteValue);
+                case short shortValue:
+                    return NumberFormat(shortValue);
+                case ushort ushortValue:
+                    return NumberFormat(ushortValue);
                 case int intValue:
-                    return IntFormat(intValue);
+                    return NumberFormat(intValue);
+                case uint uintValue:
+                    return NumberFormat(uintValue);
+                case long longValue:
+                    return NumberFormat(longValue);
+                case ulong ulongValue:
+                    return NumberFormat(ulongValue);
                 case double doubleValue:
                     return DoubleFormat(doubleValue);
                 case float floatValue:
@@ -47,10 +64,46 @@ namespace MySqlHelper.Utils
 
         private static string BoolFormat(bool value)
         {
-            return IntFormat(value ? 1 : 0);
+            return NumberFormat(value ? 1 : 0);
         }
 
-        private static string IntFormat(int value)
+        private static string NumberFormat(byte value)
+        {
+            return value.ToString();
+        }
+
+
+        private static string NumberFormat(sbyte value)
+        {
+            return value.ToString();
+        }
+
+        private static string NumberFormat(short value)
+        {
+            return value.ToString();
+        }
+
+        private static string NumberFormat(ushort value)
+        {
+            return value.ToString();
+        }
+
+        private static string NumberFormat(int value)
+        {
+            return value.ToString();
+        }
+
+        private static string NumberFormat(uint value)
+        {
+            return value.ToString();
+        }
+
+        private static string NumberFormat(long value)
+        {
+            return value.ToString();
+        }
+
+        private static string NumberFormat(ulong value)
         {
             return value.ToString();
         }
@@ -65,22 +118,22 @@ namespace MySqlHelper.Utils
             return value.ToString(CultureInfo.CreateSpecificCulture("en-US"));
         }
 
-        private static string DecimalFormat(decimal value)
+        public static string DecimalFormat(decimal value)
         {
             return value.ToString(CultureInfo.CreateSpecificCulture("en-US"));
         }
 
-        private static string DateFormat(DateTime value)
+        public static string DateFormat(DateTime value)
         {
             return "'" + value.ToString("yyyy-MM-dd") + "'";
         }
 
-        private static string TimeFormat(DateTime value)
+        public static string TimeFormat(DateTime value)
         {
             return "'" + value.ToString("HH:mm:ss") + "'";
         }
 
-        private static string DateTimeFormat(DateTime value)
+        public static string DateTimeFormat(DateTime value)
         {
             return "'" + value.ToString("yyyy-MM-dd HH:mm:ss") + "'";
         }

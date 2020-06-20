@@ -1,4 +1,5 @@
 ﻿using MySqlHelper.Attributes;
+using MySqlHelper.DataBase;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -40,10 +41,31 @@ namespace MySqlHelper.Entity
             UpdateEntity.Update(connectionString, model);
         }
 
+
+        public void Update<T>(T model, params string[] fields) where T : new()
+        {
+            UpdateEntity.Update(connectionString, model, fields);
+        }
+
+        public void ExecuteNonQuery(string query)
+        {
+            DataBaseDataReader.ExecuteNonQuery(connectionString, query);
+        }
+
         internal static Dictionary<string, object> GetFieldsWithValues<T>(T entity) where T : new()
         {
+            return GetFieldsWithValues(entity, typeof(T).GetProperties().ToList());
+        }
+
+        internal static Dictionary<string, object> GetFieldsWithValues<T>(T entity, IList<string> fields) where T : new()
+        {
+            var properties = typeof(T).GetProperties().Where(x => fields.Contains(x.Name));
+            return GetFieldsWithValues(entity, properties.ToList());
+        }
+
+        internal static Dictionary<string, object> GetFieldsWithValues<T>(T entity, List<PropertyInfo> properties) where T : new()
+        {
             var output = new Dictionary<string, object>();
-            var properties = typeof(T).GetProperties().ToList();
             properties.ForEach(property =>
             {
                 if (Attribute.IsDefined(property, typeof(ForeignKeyModelAttribute))

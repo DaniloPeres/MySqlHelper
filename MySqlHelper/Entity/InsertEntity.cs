@@ -28,7 +28,7 @@ namespace MySqlHelper.Entity
                 {
                     var keyProperty = KeyAttribute.GetAutoIncrementKeyProperty<T>();
                     var lastId = DataBaseDataReader.GetLastInsertId(connectionString);
-                    keyProperty.SetValue(entity, lastId);
+                    keyProperty.SetValue(entity, Convert.ChangeType(lastId, keyProperty.PropertyType));
                 }
             });
         }

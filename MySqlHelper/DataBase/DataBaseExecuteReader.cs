@@ -8,7 +8,6 @@ namespace MySqlHelper.DataBase
     public class DataBaseExecuteReader : IDisposable
     {
         public readonly MySqlDataReader DataReader;
-        private readonly DataBaseDataReader dbReader;
         private readonly MySqlConnection myCon;
         private readonly MySqlCommand cmd;
 
@@ -24,9 +23,9 @@ namespace MySqlHelper.DataBase
 
         public void Dispose()
         {
-            DataReader.Dispose();
-            cmd.Dispose();
-            myCon.Dispose();
+            DataReader?.Dispose();
+            cmd?.Dispose();
+            myCon?.Dispose();
         }
     }
 }
