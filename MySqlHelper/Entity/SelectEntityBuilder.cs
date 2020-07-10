@@ -16,6 +16,7 @@ namespace MySqlHelper.Entity
     {
         private readonly string connectionString;
         private readonly SelectQueryBuilder selectQueryBuilder;
+        private readonly List<(Type tableObj, string leftTable, string rightTable)> withSubItems = new List<(Type tableObj, string leftTable, string rightTable)>();
 
         public SelectEntityBuilder(string connectionString)
         {
@@ -28,6 +29,12 @@ namespace MySqlHelper.Entity
             params (string leftColumn, string rightColumn)[] columnsConnection)
         {
             selectQueryBuilder.WithJoin(joinType, leftTable, rightTable, columnConnection, columnsConnection);
+            return this;
+        }
+
+        public SelectEntityBuilder<T> WithSubItems(string leftTable, string rightTable)
+        {
+            withSubItems.Add((typeof(T), leftTable, rightTable));
             return this;
         }
 

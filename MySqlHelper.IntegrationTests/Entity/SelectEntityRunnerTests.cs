@@ -13,7 +13,7 @@ using static MySqlHelper.Attributes.TableAttribute;
 namespace MySqlHelper.IntegrationTests.Entity
 {
     [TestFixture]
-    public class SelectEntityRunner
+    public class SelectEntityRunnerTests
     {
         private EntityFactory entityFactory;
         private List<Book> books;

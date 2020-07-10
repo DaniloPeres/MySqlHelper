@@ -9,7 +9,7 @@ using static MySqlHelper.Attributes.ColumnAttribute;
 namespace MySqlHelper.IntegrationTests.Entity
 {
     [TestFixture]
-    public class UpdateEntityRunner
+    public class UpdateEntityRunnerTests
     {
         [Test]
         public void UpdateByModel()

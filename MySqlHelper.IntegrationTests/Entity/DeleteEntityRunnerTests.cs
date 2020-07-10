@@ -13,7 +13,7 @@ using static MySqlHelper.Attributes.ColumnAttribute;
 namespace MySqlHelper.IntegrationTests.Entity
 {
     [TestFixture]
-    public class DeleteEntityRunner
+    public class DeleteEntityRunnerTests
     {
         [Test]
         public void DeleteRegisterByModel()
