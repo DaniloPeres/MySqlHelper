@@ -20,10 +20,11 @@
   - [Update a register by entity model](#update-a-register-by-entity-model)
   - [Update register only specific fields by entity model](#update-register-only-specific-fields-by-entity-model)
   - [Delete a register by entity model](#delete-a-register-by-entity-model)
+  - [Select Item with sub-items](#select-item-with-sub-items)
 - [Building Queries](#building-queries)
   - [Select all books using model](#select-all-books-using-model)
   - [Select all books without model](#select-all-books-without-model)
-  - [Select all books for specific columns using model](#select-all-books-for-specific-columns-using-modelselect-all-books-for-specific-columns-using-model)
+  - [Select all books for specific columns using model](#select-all-books-for-specific-columns-using-model)
   - [Select all books for specific columns without model](#select-all-books-for-specific-columns-without-model)
   - [Select a book by ID using model](#select-a-book-by-id-using-model)
   - [Select a book by ID without model](#select-a-book-by-id-without-model)
@@ -47,6 +48,7 @@
   - [Column Attribute](#column-attribute)
   - [Key Attribute](#key-attribute)
   - [Foreign Key Model Attribute](#foreign-key-model-attribute)
+  - [Foreign Key Id Attribute](#foreign-key-id-attribute)
 
 ## Entity Model to MySQL
 
@@ -278,6 +280,47 @@ entityFactory.Insert(book);
 
 // Delete the register
 entityFactory.Delete(book);
+```
+
+### Select Item with sub-items:
+
+Let's use the models Customer and Order as example:
+
+```csharp
+[Table("customer")]
+public class Customer
+{
+    [Key(AutoIncrement = true)]
+    public int Id { get; set; }
+    public string Name { get; set; }
+    [ForeignKeyModel]
+    public List<Order> Orders { get; set; }
+
+    public Customer()
+    {
+        Orders = new List<Order>();
+    }
+}
+
+[Table("order")]
+public class Order
+{
+    [Key(AutoIncrement = true)]
+    public int Id { get; set; }
+    [ForeignKeyId(typeof(Customer))]
+    public int CustomerId { get; set; }
+    public decimal TotalPrice { get; set; }
+}
+```
+
+We can select the customer and the list of orders using sub-items:
+
+```csharp
+var selectBuilder = entityFactory
+    .CreateSelectBuilder<Customer>()
+    .WithSubItems(typeof(Order));
+
+List<Customer> customers = selectBuilder.Execute();
 ```
 
 ## Building Queries
@@ -570,6 +613,18 @@ public int Id { get; set; }
 ```csharp
 [ForeignKeyModel]
 public Publisher Publisher { get; set; }
+```
+
+### Foreign Key Id Attribute
+<b>Attribute Targets:</b> Property<br/>
+<b>Parameters:</b>
+  - ForeignType
+  
+<b>Description:</b> Set a property as ID from another model<br/>
+<b>Examples:</b>
+```csharp
+[ForeignKeyId(typeof(Customer))]
+public int CustomerId { get; set; }
 ```
 
 ## License
