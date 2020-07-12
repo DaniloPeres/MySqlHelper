@@ -17,8 +17,8 @@ namespace MySqlHelper.UnitTests.Builder
             const string queryExpected = "UPDATE `books` SET `Title` = 'Essential C#', `Price` = 20.99";
             var fields = new Dictionary<string, object>
             {
-                { GetColumnName<Book>(nameof(Book.Title)), "Essential C#" },
-                { GetColumnName<Book>(nameof(Book.Price)), 20.99d }
+                { GetColumnNameWithQuotes<Book>(nameof(Book.Title)), "Essential C#" },
+                { GetColumnNameWithQuotes<Book>(nameof(Book.Price)), 20.99d }
             };
             var updateQueryBuilder = new UpdateQueryBuilder()
                 .WithFields(fields);
@@ -37,12 +37,12 @@ namespace MySqlHelper.UnitTests.Builder
             const string queryExpected = "UPDATE `books` SET `Title` = 'Essential C#', `Price` = 20.99 WHERE `Id` = 1";
             var fields = new Dictionary<string, object>
             {
-                { GetColumnName<Book>(nameof(Book.Title)), "Essential C#" },
-                { GetColumnName<Book>(nameof(Book.Price)), 20.99d }
+                { GetColumnNameWithQuotes<Book>(nameof(Book.Title)), "Essential C#" },
+                { GetColumnNameWithQuotes<Book>(nameof(Book.Price)), 20.99d }
             };
             var updateQueryBuilder = new UpdateQueryBuilder()
                 .WithFields(fields)
-                .WithWhere(new WhereQueryEquals(GetColumnName<Book>(nameof(Book.Id)), 1));
+                .WithWhere(new WhereQueryEquals(GetColumnNameWithQuotes<Book>(nameof(Book.Id)), 1));
 
             // Act
             var query = updateQueryBuilder.Build<Book>();

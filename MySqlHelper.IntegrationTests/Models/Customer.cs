@@ -13,5 +13,10 @@ namespace MySqlHelper.IntegrationTests.Models
         public string Name { get; set; }
         [ForeignKeyModel]
         public List<Order> Orders { get; set; }
+
+        public Customer()
+        {
+            Orders = new List<Order>();
+        }
     }
 }

@@ -48,7 +48,7 @@ namespace MySqlHelper.IntegrationTests.Entity
         {
             var selectBuilder = entityFactory
                 .CreateSelectBuilder<Book>()
-                .WithWhere(new WhereQueryEquals(GetColumnName<Book>(nameof(Book.Id)), 1));
+                .WithWhere(new WhereQueryEquals(GetColumnNameWithQuotes<Book>(nameof(Book.Id)), 1));
             var books = selectBuilder.Execute();
 
             Assert.AreEqual(1, books.Count);
@@ -60,8 +60,8 @@ namespace MySqlHelper.IntegrationTests.Entity
         {
             var selectBuilder = entityFactory
                 .CreateSelectBuilder<Book>()
-                .WithWhere(new WhereQueryLowerThan(GetColumnName<Book>(nameof(Book.Price)), 10d),
-                    (WhereQuerySyntaxEnum.And, new WhereQueryEquals(GetColumnName<Book>(nameof(Book.PublisherId)), 1)));
+                .WithWhere(new WhereQueryLowerThan(GetColumnNameWithQuotes<Book>(nameof(Book.Price)), 10d),
+                    (WhereQuerySyntaxEnum.And, new WhereQueryEquals(GetColumnNameWithQuotes<Book>(nameof(Book.PublisherId)), 1)));
             var books = selectBuilder.Execute();
 
             Assert.AreEqual(1, books.Count);
@@ -75,10 +75,10 @@ namespace MySqlHelper.IntegrationTests.Entity
                 .CreateSelectBuilder<Book>()
                 .WithJoin(
                     JoinEnum.LeftJoin,
-                    GetTableName<Book>(),
-                    GetTableName<Publisher>(),
-                    (GetColumnName<Book>(nameof(Book.PublisherId)), GetColumnName<Publisher>(nameof(Publisher.Id))))
-                .WithWhere<Book>(new WhereQueryEquals(GetColumnName<Book>(nameof(Book.Id)), book.Id));
+                    GetTableNameWithQuotes<Book>(),
+                    GetTableNameWithQuotes<Publisher>(),
+                    (GetColumnNameWithQuotes<Book>(nameof(Book.PublisherId)), GetColumnNameWithQuotes<Publisher>(nameof(Publisher.Id))))
+                .WithWhere<Book>(new WhereQueryEquals(GetColumnNameWithQuotes<Book>(nameof(Book.Id)), book.Id));
 
             var books = selectBuilder.Execute();
 
@@ -94,14 +94,14 @@ namespace MySqlHelper.IntegrationTests.Entity
         {
             var selectBuilder = entityFactory
                 .CreateSelectBuilder<Book>()
-                .WithColumns<Book>(GetColumnName<Book>(nameof(Book.Title)))
-                .WithColumns<Publisher>(GetColumnName<Publisher>(nameof(Publisher.Name)))
+                .WithColumns<Book>(GetColumnNameWithQuotes<Book>(nameof(Book.Title)))
+                .WithColumns<Publisher>(GetColumnNameWithQuotes<Publisher>(nameof(Publisher.Name)))
                 .WithJoin(
                     JoinEnum.LeftJoin,
-                    GetTableName<Book>(),
-                    GetTableName<Publisher>(),
-                    (GetColumnName<Book>(nameof(Book.PublisherId)), GetColumnName<Publisher>(nameof(Publisher.Id))))
-                .WithWhere<Book>(new WhereQueryEquals(GetColumnName<Book>(nameof(Book.Id)), 1));
+                    GetTableNameWithQuotes<Book>(),
+                    GetTableNameWithQuotes<Publisher>(),
+                    (GetColumnNameWithQuotes<Book>(nameof(Book.PublisherId)), GetColumnNameWithQuotes<Publisher>(nameof(Publisher.Id))))
+                .WithWhere<Book>(new WhereQueryEquals(GetColumnNameWithQuotes<Book>(nameof(Book.Id)), 1));
 
             var books = selectBuilder.Execute();
 
@@ -120,7 +120,7 @@ namespace MySqlHelper.IntegrationTests.Entity
             // TODO finish it, make insert, test and delete
             var selectBuilder = entityFactory
                 .CreateSelectBuilder<Book>()
-                .WithOrderBy((GetColumnName<Book>(nameof(Book.Id)), OrderBySorted.Desc));
+                .WithOrderBy((GetColumnNameWithQuotes<Book>(nameof(Book.Id)), OrderBySorted.Desc));
 
             var books = selectBuilder.Execute();
 
@@ -136,10 +136,10 @@ namespace MySqlHelper.IntegrationTests.Entity
                 .CreateSelectBuilder<Book>()
                 .WithJoin(
                     JoinEnum.LeftJoin,
-                    GetTableName<Book>(),
-                    GetTableName<Publisher>(),
-                    (GetColumnName<Book>(nameof(Book.PublisherId)), GetColumnName<Publisher>(nameof(Publisher.Id))))
-                .WithWhere<Publisher>(new WhereQueryEquals(GetColumnName<Publisher>(nameof(Publisher.Name)), book.Publisher.Name));
+                    GetTableNameWithQuotes<Book>(),
+                    GetTableNameWithQuotes<Publisher>(),
+                    (GetColumnNameWithQuotes<Book>(nameof(Book.PublisherId)), GetColumnNameWithQuotes<Publisher>(nameof(Publisher.Id))))
+                .WithWhere<Publisher>(new WhereQueryEquals(GetColumnNameWithQuotes<Publisher>(nameof(Publisher.Name)), book.Publisher.Name));
 
             var books = selectBuilder.Execute();
 

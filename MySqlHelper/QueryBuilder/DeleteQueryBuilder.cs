@@ -40,7 +40,7 @@ namespace MySqlHelper.QueryBuilder
 
         public string Build<T>() where T : new()
         {
-            var tableName = TableAttribute.GetTableName<T>();
+            var tableName = TableAttribute.GetTableNameWithQuotes<T>();
             return Build(tableName);
         }
 

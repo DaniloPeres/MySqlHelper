@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using MySqlHelper.IntegrationTests.Helper;
 
 namespace MySqlHelper.IntegrationTests.Entity
 {
@@ -33,16 +34,20 @@ namespace MySqlHelper.IntegrationTests.Entity
         [Test]
         public void SelectAllRegistersWithSubItems()
         {
+            // Arrange
             var selectBuilder = entityFactory
                 .CreateSelectBuilder<Customer>()
-                .WithSubItems(
-                    TableAttribute.GetTableName<Customer>(),
-                    TableAttribute.GetTableName<Order>(),
-                    (ColumnAttribute.GetColumnName<Customer>(nameof(Customer.Id)), ColumnAttribute.GetColumnName<Order>(nameof(Order.CustomerId))));
+                .WithSubItems(typeof(Order));
+
+            // Act
             var customers = selectBuilder.Execute().ToList();
 
-
-            // TODO
+            // Assert
+            Assert.AreEqual(this.customers.Count, customers.Count);
+            for (var i = 0; i < customers.Count; i++)
+            {
+                Assert.True(Comparer.IsSameCustomer(this.customers[i], customers[i]));
+            }
         }
 
 
@@ -60,13 +65,13 @@ namespace MySqlHelper.IntegrationTests.Entity
                         {
                             Id = 1,
                             CustomerId = 1,
-                            Date = DateTime.Parse("2020-01-01 00:00:00")
+                            TotalPrice = 11.11m
                         },
                         new Order
                         {
                             Id = 2,
                             CustomerId = 1,
-                            Date = DateTime.Parse("2020-01-01 00:02:00")
+                            TotalPrice = 11.22m
                         }
                     }
                 },
@@ -80,19 +85,19 @@ namespace MySqlHelper.IntegrationTests.Entity
                         {
                             Id = 3,
                             CustomerId = 2,
-                            Date = DateTime.Parse("2020-01-02 10:00:00")
+                            TotalPrice = 22.11m
                         },
                         new Order
                         {
                             Id = 4,
                             CustomerId = 2,
-                            Date = DateTime.Parse("2020-01-02 10:02:00")
+                            TotalPrice = 22.22m
                         },
                         new Order
                         {
                             Id = 5,
                             CustomerId = 2,
-                            Date = DateTime.Parse("2020-01-02 10:02:00")
+                            TotalPrice = 22.33m
                         }
                     }
                 }

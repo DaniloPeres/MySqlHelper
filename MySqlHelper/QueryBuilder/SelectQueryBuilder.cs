@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
 using MySqlHelper.Attributes;
 using MySqlHelper.Interfaces;
@@ -11,14 +13,14 @@ using MySqlHelper.QueryBuilder.Components.WhereQuery;
 
 namespace MySqlHelper.QueryBuilder
 {
-    public class SelectQueryBuilder : ISelectQuery<SelectQueryBuilder>
+    public class SelectQueryBuilder : ISelectQuery<SelectQueryBuilder>, ICloneable
     {
         private readonly List<string> columns = new List<string>();
         private readonly JoinQueryBuilder joinBuilder = new JoinQueryBuilder();
         private readonly WhereQueryBuilder whereBuilder = new WhereQueryBuilder();
         private readonly List<string> groupBy = new List<string>();
         private readonly List<(string column, OrderBySorted sorted)> orderBy = new List<(string column, OrderBySorted sorted)>();
-        
+
         public SelectQueryBuilder WithColumns(string column, params string[] columns)
         {
             this.columns.Add(column);
@@ -26,9 +28,15 @@ namespace MySqlHelper.QueryBuilder
             return this;
         }
 
+        public SelectQueryBuilder ClearColumns()
+        {
+            columns.Clear();
+            return this;
+        }
+
         public SelectQueryBuilder WithColumns<T>(string column, params string[] columns) where T : new()
         {
-            var tableName = TableAttribute.GetTableName<T>();
+            var tableName = TableAttribute.GetTableNameWithQuotes<T>();
 
             var newColumns = new List<string> { column };
             newColumns.AddRange(columns);
@@ -50,7 +58,7 @@ namespace MySqlHelper.QueryBuilder
             return this;
         }
 
-        
+
         public SelectQueryBuilder WithWhere(WhereQueryCondition condition, params (WhereQuerySyntaxEnum syntax, WhereQueryCondition condition)[] wheres)
         {
             whereBuilder.WithWhere(condition, wheres);
@@ -70,7 +78,7 @@ namespace MySqlHelper.QueryBuilder
             return this;
         }
 
-        public SelectQueryBuilder WithGroupBy(string column,  params string[] columns)
+        public SelectQueryBuilder WithGroupBy(string column, params string[] columns)
         {
             groupBy.Add(column);
             groupBy.AddRange(columns);
@@ -85,10 +93,15 @@ namespace MySqlHelper.QueryBuilder
             return this;
         }
 
-        public string Build<T>() where T: new()
+        public string Build<T>() where T : new()
         {
-            var tableName = TableAttribute.GetTableName<T>();
-            return Build(tableName, GenerateColumnsByModelQuery<T>());
+            return Build(typeof(T));
+        }
+
+        public string Build(Type type)
+        {
+            var tableName = TableAttribute.GetTableNameWithQuotes(type);
+            return Build(tableName, GenerateColumnsByModelQuery(type));
         }
 
         public string Build(string table)
@@ -123,13 +136,17 @@ namespace MySqlHelper.QueryBuilder
 
         private string GenerateColumnsByModelQuery<T>() where T : new()
         {
+            return GenerateColumnsByModelQuery(typeof(T));
+        }
+
+        private string GenerateColumnsByModelQuery(Type type)
+        {
             return columns.Any()
                 ? string.Join(", ", columns)
                 : !HasJoin()
                     ? "*"
-                    : string.Join(", ", GetModelColumns<T>());
+                    : string.Join(", ", GetModelColumns(type));
         }
-
         public bool HasJoin()
         {
             return !joinBuilder.IsEmpty();
@@ -137,14 +154,19 @@ namespace MySqlHelper.QueryBuilder
 
         public IEnumerable<string> GetModelColumns<T>() where T : new()
         {
-            return GetQueryPropertiesAndColumns<T>().Select(x => x.columnQuery);
+            return GetModelColumns(typeof(T));
         }
 
-        public IEnumerable<(PropertyInfo property, string columnQuery)> GetQueryPropertiesAndColumns<T>() where T : new()
+        public IEnumerable<string> GetModelColumns(Type type)
+        {
+            return GetQueryPropertiesAndColumns(type).Select(x => x.columnQuery);
+        }
+
+        public IEnumerable<(PropertyInfo property, string columnQuery)> GetQueryPropertiesAndColumns(Type type)
         {
             var output = new List<(PropertyInfo property, string columnQuery)>();
             var joinColumns = new List<(PropertyInfo property, string columnQuery)>();
-            var properties = typeof(T).GetProperties().ToList();
+            var properties = type.GetProperties().ToList();
 
             properties.Sort((c1, c2) => string.Compare(c1.Name, c2.Name, StringComparison.Ordinal));
 
@@ -153,14 +175,15 @@ namespace MySqlHelper.QueryBuilder
                 if (Attribute.IsDefined(property, typeof(ForeignKeyModelAttribute)))
                 {
                     var t = property.PropertyType;
+                    if (t.IsGenericType)
+                        GetQueryPropertiesAndColumns(t = t.GetGenericArguments()[0]);
                     var methodGetModelColumns = this.GetType().GetMethod("GetQueryPropertiesAndColumns");
-                    var genericMethod = methodGetModelColumns.MakeGenericMethod(t);
-                    var foreignModelColumns = genericMethod.Invoke(this, null) as List<(PropertyInfo property, string columnQuery)>;
+                    var foreignModelColumns = methodGetModelColumns.Invoke(this, new[] { t }) as List<(PropertyInfo property, string columnQuery)>;
                     joinColumns.AddRange(foreignModelColumns);
                 }
                 else
                 {
-                    output.Add((property, ColumnAttribute.GetColumnNameWithTable<T>(property.Name)));
+                    output.Add((property, ColumnAttribute.GetColumnNameWithTable(type, property.Name)));
                 }
             });
 
@@ -170,7 +193,17 @@ namespace MySqlHelper.QueryBuilder
 
         public bool HasDefinedColumns()
         {
-            return columns.Any();
+            return columns.Any() && !columns.Exists(x => x.Contains("*"));
+        }
+
+        public SelectQueryBuilder CloneAsSelectQueryBuilder()
+        {
+            return (SelectQueryBuilder)Clone();
+        }
+
+        public object Clone()
+        {
+            return MemberwiseClone();
         }
 
         private string GenerateGroupBy()

@@ -16,8 +16,8 @@ namespace MySqlHelper.UnitTests.Builder
             const string queryExpected = "INSERT INTO `books` (`Title`, `Price`) VALUES ('Essential C#', 20.99)";
             var fields = new Dictionary<string, object>
             {
-                { GetColumnName<Book>(nameof(Book.Title)), "Essential C#" },
-                { GetColumnName<Book>(nameof(Book.Price)), 20.99d }
+                { GetColumnNameWithQuotes<Book>(nameof(Book.Title)), "Essential C#" },
+                { GetColumnNameWithQuotes<Book>(nameof(Book.Price)), 20.99d }
             };
             var insertQueryBuilder = new InsertQueryBuilder()
                 .WithFields(fields);

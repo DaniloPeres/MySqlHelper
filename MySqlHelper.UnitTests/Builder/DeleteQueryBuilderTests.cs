@@ -31,7 +31,7 @@ namespace MySqlHelper.UnitTests.Builder
             // Arrange
             const string queryExpected = "DELETE FROM `books` WHERE `Id` = 1";
             var deleteQueryBuilder = new DeleteQueryBuilder()
-                .WithWhere(new WhereQueryEquals(GetColumnName<Book>(nameof(Book.Id)), 1));
+                .WithWhere(new WhereQueryEquals(GetColumnNameWithQuotes<Book>(nameof(Book.Id)), 1));
 
             // Act
             var query = deleteQueryBuilder.Build<Book>();
@@ -47,8 +47,8 @@ namespace MySqlHelper.UnitTests.Builder
             const string queryExpected = "DELETE FROM `books` WHERE `Id` = 1 OR `Id` = 2";
             var deleteQueryBuilder =  new DeleteQueryBuilder()
                 .WithWhere(
-                    new WhereQueryEquals(GetColumnName<Book>(nameof(Book.Id)), 1),
-                    (WhereQuerySyntaxEnum.Or, new WhereQueryEquals(GetColumnName<Book>(nameof(Book.Id)), 2)));
+                    new WhereQueryEquals(GetColumnNameWithQuotes<Book>(nameof(Book.Id)), 1),
+                    (WhereQuerySyntaxEnum.Or, new WhereQueryEquals(GetColumnNameWithQuotes<Book>(nameof(Book.Id)), 2)));
 
             // Act
             var query = deleteQueryBuilder.Build<Book>();
@@ -65,10 +65,10 @@ namespace MySqlHelper.UnitTests.Builder
             var deleteQueryBuilder = new DeleteQueryBuilder()
                 .WithJoin(
                     JoinEnum.Join,
-                    GetTableName<Book>(),
-                    GetTableName<Publisher>(),
-                    (GetColumnName<Book>(nameof(Book.PublisherId)), GetColumnName<Publisher>(nameof(Publisher.Id))))
-                .WithWhere<Publisher>(new WhereQueryLike(GetColumnName<Publisher>(nameof(Publisher.Name)), "%Scholastic%"));
+                    GetTableNameWithQuotes<Book>(),
+                    GetTableNameWithQuotes<Publisher>(),
+                    (GetColumnNameWithQuotes<Book>(nameof(Book.PublisherId)), GetColumnNameWithQuotes<Publisher>(nameof(Publisher.Id))))
+                .WithWhere<Publisher>(new WhereQueryLike(GetColumnNameWithQuotes<Publisher>(nameof(Publisher.Name)), "%Scholastic%"));
 
             // Act
             var query = deleteQueryBuilder.Build<Book>();

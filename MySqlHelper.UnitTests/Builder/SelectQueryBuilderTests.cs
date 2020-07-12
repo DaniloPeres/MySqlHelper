@@ -32,7 +32,7 @@ namespace MySqlHelper.UnitTests.Builder
             // Arrange
             const string queryExpected = "SELECT `Title`, `Price` FROM `books`";
             var selectQueryBuilder = new SelectQueryBuilder()
-                    .WithColumns(GetColumnName<Book>(nameof(Book.Title)), GetColumnName<Book>(nameof(Book.Price)));
+                    .WithColumns(GetColumnNameWithQuotes<Book>(nameof(Book.Title)), GetColumnNameWithQuotes<Book>(nameof(Book.Price)));
 
             // Act
             var query = selectQueryBuilder.Build<Book>();
@@ -47,7 +47,7 @@ namespace MySqlHelper.UnitTests.Builder
             // Arrange
             const string queryExpected = "SELECT * FROM `books` WHERE `Id` = 1";
             var selectQueryBuilder = new SelectQueryBuilder()
-                    .WithWhere(new WhereQueryEquals(GetColumnName<Book>(nameof(Book.Id)), 1));
+                    .WithWhere(new WhereQueryEquals(GetColumnNameWithQuotes<Book>(nameof(Book.Id)), 1));
 
             // Act
             var query = selectQueryBuilder.Build<Book>();
@@ -63,8 +63,8 @@ namespace MySqlHelper.UnitTests.Builder
             const string queryExpected = "SELECT * FROM `books` WHERE `Id` = 1 OR `Id` = 2";
             var selectQueryBuilder = new SelectQueryBuilder()
                 .WithWhere(
-                    new WhereQueryEquals(GetColumnName<Book>(nameof(Book.Id)), 1),
-                    (WhereQuerySyntaxEnum.Or, new WhereQueryEquals(GetColumnName<Book>(nameof(Book.Id)), 2)));
+                    new WhereQueryEquals(GetColumnNameWithQuotes<Book>(nameof(Book.Id)), 1),
+                    (WhereQuerySyntaxEnum.Or, new WhereQueryEquals(GetColumnNameWithQuotes<Book>(nameof(Book.Id)), 2)));
 
             // Act
             var query = selectQueryBuilder.Build<Book>();
@@ -79,12 +79,12 @@ namespace MySqlHelper.UnitTests.Builder
             // Arrange
             const string queryExpected = "SELECT * FROM `books` WHERE (`Price` BETWEEN 50 AND 100) AND (`Title` LIKE '%C#%' OR `Title` LIKE '%MySql%')";
             var selectQueryBuilder = new SelectQueryBuilder()
-                .WithWhere(new WhereQueryBetween(GetColumnName<Book>(nameof(Book.Price)), 50, 100))
+                .WithWhere(new WhereQueryBetween(GetColumnNameWithQuotes<Book>(nameof(Book.Price)), 50, 100))
                 .WithWhereAppend(
                     WhereQuerySyntaxEnum.And,
-                    new WhereQueryLike(GetColumnName<Book>(nameof(Book.Title)), "%C#%"),
+                    new WhereQueryLike(GetColumnNameWithQuotes<Book>(nameof(Book.Title)), "%C#%"),
                     (WhereQuerySyntaxEnum.Or,
-                        new WhereQueryLike(GetColumnName<Book>(nameof(Book.Title)), "%MySql%")));
+                        new WhereQueryLike(GetColumnNameWithQuotes<Book>(nameof(Book.Title)), "%MySql%")));
 
             // Act
             var query = selectQueryBuilder.Build<Book>();
@@ -99,7 +99,7 @@ namespace MySqlHelper.UnitTests.Builder
             // Arrange
             const string queryExpected = "SELECT * FROM `books` WHERE `Title` = 'Essential C#'";
             var selectQueryBuilder = new SelectQueryBuilder()
-                    .WithWhere(new WhereQueryEquals(GetColumnName<Book>(nameof(Book.Title)), "Essential C#"));
+                    .WithWhere(new WhereQueryEquals(GetColumnNameWithQuotes<Book>(nameof(Book.Title)), "Essential C#"));
 
             // Act
             var query = selectQueryBuilder.Build<Book>();
@@ -114,7 +114,7 @@ namespace MySqlHelper.UnitTests.Builder
             // Arrange
             const string queryExpected = "SELECT * FROM `books` WHERE NOT `Price` = 0";
             var selectQueryBuilder = new SelectQueryBuilder()
-                    .WithWhere(new WhereQueryNotEquals(GetColumnName<Book>(nameof(Book.Price)), 0d));
+                    .WithWhere(new WhereQueryNotEquals(GetColumnNameWithQuotes<Book>(nameof(Book.Price)), 0d));
 
             // Act
             var query = selectQueryBuilder.Build<Book>();
@@ -129,7 +129,7 @@ namespace MySqlHelper.UnitTests.Builder
             // Arrange
             const string queryExpected = "SELECT * FROM `books` WHERE `Title` LIKE '%C#%'";
             var selectQueryBuilder = new SelectQueryBuilder()
-                    .WithWhere(new WhereQueryLike(GetColumnName<Book>(nameof(Book.Title)), "%C#%"));
+                    .WithWhere(new WhereQueryLike(GetColumnNameWithQuotes<Book>(nameof(Book.Title)), "%C#%"));
 
             // Act
             var query = selectQueryBuilder.Build<Book>();
@@ -144,7 +144,7 @@ namespace MySqlHelper.UnitTests.Builder
             // Arrange
             const string queryExpected = "SELECT * FROM `books` WHERE NOT `Title` LIKE '%C#%'";
             var selectQueryBuilder = new SelectQueryBuilder()
-                    .WithWhere(new WhereQueryNotLike(GetColumnName<Book>(nameof(Book.Title)), "%C#%"));
+                    .WithWhere(new WhereQueryNotLike(GetColumnNameWithQuotes<Book>(nameof(Book.Title)), "%C#%"));
 
             // Act
             var query = selectQueryBuilder.Build<Book>();
@@ -159,7 +159,7 @@ namespace MySqlHelper.UnitTests.Builder
             // Arrange
             const string queryExpected = "SELECT * FROM `books` WHERE `Price` BETWEEN 50 AND 100";
             var selectQueryBuilder = new SelectQueryBuilder()
-                    .WithWhere(new WhereQueryBetween(GetColumnName<Book>(nameof(Book.Price)), 50, 100));
+                    .WithWhere(new WhereQueryBetween(GetColumnNameWithQuotes<Book>(nameof(Book.Price)), 50, 100));
 
             // Act
             var query = selectQueryBuilder.Build<Book>();
@@ -174,7 +174,7 @@ namespace MySqlHelper.UnitTests.Builder
             // Arrange
             const string queryExpected = "SELECT * FROM `books` WHERE NOT `Price` BETWEEN 50 AND 100";
             var selectQueryBuilder = new SelectQueryBuilder()
-                    .WithWhere(new WhereQueryNotBetween(GetColumnName<Book>(nameof(Book.Price)), 50, 100));
+                    .WithWhere(new WhereQueryNotBetween(GetColumnNameWithQuotes<Book>(nameof(Book.Price)), 50, 100));
 
             // Act
             var query = selectQueryBuilder.Build<Book>();
@@ -189,7 +189,7 @@ namespace MySqlHelper.UnitTests.Builder
             // Arrange
             const string queryExpected = "SELECT * FROM `books` WHERE `Id` IN (1,2,3)";
             var selectQueryBuilder = new SelectQueryBuilder()
-                .WithWhere(new WhereQueryIn(GetColumnName<Book>(nameof(Book.Id)), 1, 2, 3));
+                .WithWhere(new WhereQueryIn(GetColumnNameWithQuotes<Book>(nameof(Book.Id)), 1, 2, 3));
 
             // Act
             var query = selectQueryBuilder.Build<Book>();
@@ -204,7 +204,7 @@ namespace MySqlHelper.UnitTests.Builder
             // Arrange
             const string queryExpected = "SELECT * FROM `books` WHERE NOT `Id` IN (1,2,3)";
             var selectQueryBuilder = new SelectQueryBuilder()
-                    .WithWhere(new WhereQueryNotIn(GetColumnName<Book>(nameof(Book.Id)), 1, 2, 3));
+                    .WithWhere(new WhereQueryNotIn(GetColumnNameWithQuotes<Book>(nameof(Book.Id)), 1, 2, 3));
 
             // Act
             var query = selectQueryBuilder.Build<Book>();
@@ -219,7 +219,7 @@ namespace MySqlHelper.UnitTests.Builder
             // Arrange
             const string queryExpected = "SELECT * FROM `books` WHERE `Price` > 100";
             var selectQueryBuilder =  new SelectQueryBuilder()
-                    .WithWhere(new WhereQueryGreaterThan(GetColumnName<Book>(nameof(Book.Price)), 100));
+                    .WithWhere(new WhereQueryGreaterThan(GetColumnNameWithQuotes<Book>(nameof(Book.Price)), 100));
 
             // Act
             var query = selectQueryBuilder.Build<Book>();
@@ -234,7 +234,7 @@ namespace MySqlHelper.UnitTests.Builder
             // Arrange
             const string queryExpected = "SELECT * FROM `books` WHERE `Price` >= 100";
             var selectQueryBuilder = new SelectQueryBuilder()
-                .WithWhere(new WhereQueryGreaterThanOrEqual(GetColumnName<Book>(nameof(Book.Price)), 100));
+                .WithWhere(new WhereQueryGreaterThanOrEqual(GetColumnNameWithQuotes<Book>(nameof(Book.Price)), 100));
 
             // Act
             var query = selectQueryBuilder.Build<Book>();
@@ -249,7 +249,7 @@ namespace MySqlHelper.UnitTests.Builder
             // Arrange
             const string queryExpected = "SELECT * FROM `books` WHERE `Price` < 100";
             var selectQueryBuilder = new SelectQueryBuilder()
-                    .WithWhere(new WhereQueryLowerThan(GetColumnName<Book>(nameof(Book.Price)), 100));
+                    .WithWhere(new WhereQueryLowerThan(GetColumnNameWithQuotes<Book>(nameof(Book.Price)), 100));
 
             // Act
             var query = selectQueryBuilder.Build<Book>();
@@ -264,7 +264,7 @@ namespace MySqlHelper.UnitTests.Builder
             // Arrange
             const string queryExpected = "SELECT * FROM `books` WHERE `Price` <= 100";
             var selectQueryBuilder = new SelectQueryBuilder()
-                    .WithWhere(new WhereQueryLowerThanOrEqual(GetColumnName<Book>(nameof(Book.Price)), 100));
+                    .WithWhere(new WhereQueryLowerThanOrEqual(GetColumnNameWithQuotes<Book>(nameof(Book.Price)), 100));
 
             // Act
             var query = selectQueryBuilder.Build<Book>();
@@ -307,14 +307,14 @@ namespace MySqlHelper.UnitTests.Builder
                 "LEFT JOIN `publishers` ON `books`.`PublisherId` = `publishers`.`Id`",
                 "WHERE `books`.`Price` > 100");
             var selectQueryBuilder = new SelectQueryBuilder()
-                .WithColumns<Book>(GetColumnName<Book>(nameof(Book.Title)))
-                .WithColumns<Publisher>(GetColumnName<Publisher>(nameof(Publisher.Name)))
+                .WithColumns<Book>(GetColumnNameWithQuotes<Book>(nameof(Book.Title)))
+                .WithColumns<Publisher>(GetColumnNameWithQuotes<Publisher>(nameof(Publisher.Name)))
                 .WithJoin(
                     JoinEnum.LeftJoin,
-                    GetTableName<Book>(),
-                    GetTableName<Publisher>(),
-                    (GetColumnName<Book>(nameof(Book.PublisherId)), GetColumnName<Publisher>(nameof(Publisher.Id))))
-                .WithWhere<Book>(new WhereQueryGreaterThan(GetColumnName<Book>(nameof(Book.Price)), 100));
+                    GetTableNameWithQuotes<Book>(),
+                    GetTableNameWithQuotes<Publisher>(),
+                    (GetColumnNameWithQuotes<Book>(nameof(Book.PublisherId)), GetColumnNameWithQuotes<Publisher>(nameof(Publisher.Id))))
+                .WithWhere<Book>(new WhereQueryGreaterThan(GetColumnNameWithQuotes<Book>(nameof(Book.Price)), 100));
 
             // Act
             var query = selectQueryBuilder.Build<Book>();
@@ -329,8 +329,8 @@ namespace MySqlHelper.UnitTests.Builder
             // Arrange
             const string queryExpected = "SELECT Count(*), `Title` FROM `books` GROUP BY `Price`";
             var selectQueryBuilder = new SelectQueryBuilder()
-                .WithColumns("Count(*)", GetColumnName<Book>(nameof(Book.Title)))
-                .WithGroupBy(GetColumnName<Book>(nameof(Book.Price)));
+                .WithColumns("Count(*)", GetColumnNameWithQuotes<Book>(nameof(Book.Title)))
+                .WithGroupBy(GetColumnNameWithQuotes<Book>(nameof(Book.Price)));
 
             // Act
             var query = selectQueryBuilder.Build<Book>();
@@ -345,7 +345,7 @@ namespace MySqlHelper.UnitTests.Builder
             // Arrange
             const string queryExpected = "SELECT * FROM `books` ORDER BY `Price` DESC, `Title` ASC";
             var selectQueryBuilder =  new SelectQueryBuilder()
-                .WithOrderBy((GetColumnName<Book>(nameof(Book.Price)), OrderBySorted.Desc), (GetColumnName<Book>(nameof(Book.Title)), OrderBySorted.Asc));
+                .WithOrderBy((GetColumnNameWithQuotes<Book>(nameof(Book.Price)), OrderBySorted.Desc), (GetColumnNameWithQuotes<Book>(nameof(Book.Title)), OrderBySorted.Asc));
 
             // Act
             var query = selectQueryBuilder.Build<Book>();
@@ -367,9 +367,9 @@ namespace MySqlHelper.UnitTests.Builder
             var selectQueryBuilder = new SelectQueryBuilder()
                 .WithJoin(
                     joinType,
-                    GetTableName<Book>(),
-                    GetTableName<Publisher>(),
-                    (GetColumnName<Book>(nameof(Book.PublisherId)), GetColumnName<Publisher>(nameof(Publisher.Id))));
+                    GetTableNameWithQuotes<Book>(),
+                    GetTableNameWithQuotes<Publisher>(),
+                    (GetColumnNameWithQuotes<Book>(nameof(Book.PublisherId)), GetColumnNameWithQuotes<Publisher>(nameof(Publisher.Id))));
 
             // Act
             var query = selectQueryBuilder.Build<Book>();

@@ -8,7 +8,7 @@ namespace MySqlHelper.IntegrationTests.Helper
     {
         public static void CleanTable<T>() where T : new()
         {
-            var table = GetTableName<T>();
+            var table = GetTableNameWithQuotes<T>();
             var cleanTableQuery = $"TRUNCATE {table}";
             DataBaseDataReader.ExecuteNonQuery(new ConfigurationSettings().ConnectionString, cleanTableQuery);
         }

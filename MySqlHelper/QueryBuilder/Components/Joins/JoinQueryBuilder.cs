@@ -34,8 +34,8 @@ namespace MySqlHelper.QueryBuilder.Components.Joins
 
         internal bool ContainsJoinWithTables<T1, T2>() where T1 : new() where T2 : new()
         {
-            var tableNameLeft = TableAttribute.GetTableName<T1>();
-            var tableNameRight = TableAttribute.GetTableName<T2>();
+            var tableNameLeft = TableAttribute.GetTableNameWithQuotes<T1>();
+            var tableNameRight = TableAttribute.GetTableNameWithQuotes<T2>();
 
             return ContainsJoinWithTables(tableNameLeft, tableNameRight);
         }

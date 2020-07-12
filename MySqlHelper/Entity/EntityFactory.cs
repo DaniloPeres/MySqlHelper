@@ -72,7 +72,7 @@ namespace MySqlHelper.Entity
                 || KeyAttribute.IsAutoIncrementKey(property))  // Ignore Auto increment key
                     return;
 
-                var columnName = ColumnAttribute.GetColumnNameNoQuotes<T>(property.Name);
+                var columnName = ColumnAttribute.GetColumnName(typeof(T), property.Name);
                 output.Add(columnName, property.GetValue(entity));
             });
 

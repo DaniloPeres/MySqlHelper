@@ -16,7 +16,7 @@ namespace MySqlHelper.QueryBuilder.Components.WhereQuery
 
         internal void SetTable<T>() where T : new()
         {
-            Table = TableAttribute.GetTableName<T>();
+            Table = TableAttribute.GetTableNameWithQuotes<T>();
         }
 
         internal abstract string GenerateCondition();

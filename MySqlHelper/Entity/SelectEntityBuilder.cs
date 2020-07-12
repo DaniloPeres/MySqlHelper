@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -16,7 +17,7 @@ namespace MySqlHelper.Entity
     {
         private readonly string connectionString;
         private readonly SelectQueryBuilder selectQueryBuilder;
-        private readonly List<(Type tableObj, string leftTable, string rightTable)> withSubItems = new List<(Type tableObj, string leftTable, string rightTable)>();
+        private readonly List<(Type type, Type typeSubItem)> withSubItems = new List<(Type tableObj, Type typeSubItem)>();
 
         public SelectEntityBuilder(string connectionString)
         {
@@ -32,9 +33,9 @@ namespace MySqlHelper.Entity
             return this;
         }
 
-        public SelectEntityBuilder<T> WithSubItems(string leftTable, string rightTable)
+        public SelectEntityBuilder<T> WithSubItems(Type typeSubItem)
         {
-            withSubItems.Add((typeof(T), leftTable, rightTable));
+            withSubItems.Add((typeof(T), typeSubItem));
             return this;
         }
 
@@ -86,33 +87,22 @@ namespace MySqlHelper.Entity
 
         public IList<T> Execute()
         {
-            var query = selectQueryBuilder.Build<T>();
+            var items = ExecuteMainQuery();
+            withSubItems.ForEach(subItem => ExecuteSubItemsQuery(items, subItem));
 
-            var output = new List<T>();
-
-            using (var exe = new DataBaseExecuteReader(connectionString, query))
-            {
-                while (exe.DataReader.Read())
-                {
-                    var item = new T();
-                    ReadValues(exe, item, selectQueryBuilder.HasJoin());
-                    output.Add(item);
-                }
-            }
-
-            return output;
+            return items;
         }
 
-        public void ReadValues<T2>(DataBaseExecuteReader exe, T2 item, bool hasJoin) where T2 : new()
+        public void ReadValues<T2>(DataBaseExecuteReader exe, Type type, T2 item, bool hasJoin) where T2 : new()
         {
-            var properties = typeof(T2).GetProperties().ToList();
-            var columnsPropertiesFromQuery = selectQueryBuilder.GetQueryPropertiesAndColumns<T>().ToList();
+            var properties = type.GetProperties().ToList();
+            var columnsPropertiesFromQuery = selectQueryBuilder.GetQueryPropertiesAndColumns(typeof(T2)).ToList();
             properties.ForEach(property =>
             {
                 if (Attribute.IsDefined(property, typeof(ForeignKeyModelAttribute)))
                 {
                     // Read the foreign key item only if there is joins
-                    if (!hasJoin || !HasTablesJoin<T2>(property))
+                    if (!hasJoin || !HasTablesJoin(type, property))
                         return;
 
                     var foreignKeyItem = Activator.CreateInstance(property.PropertyType);
@@ -121,7 +111,7 @@ namespace MySqlHelper.Entity
                     var genericMethod = methodGetModelColumns.MakeGenericMethod(t);
                     object[] args =
                     {
-                        exe, foreignKeyItem, hasJoin
+                        exe, t, foreignKeyItem, hasJoin
                     };
                     genericMethod.Invoke(this, args);
                     property.SetValue(item, foreignKeyItem);
@@ -129,8 +119,8 @@ namespace MySqlHelper.Entity
                 else
                 {
                     var columnName = hasJoin
-                        ? ColumnAttribute.GetColumnRenameQuery<T2>(property.Name)
-                        : ColumnAttribute.GetColumnNameNoQuotes<T2>(property.Name);
+                        ? ColumnAttribute.GetColumnRenameQuery(type, property.Name)
+                        : ColumnAttribute.GetColumnName(type, property.Name);
 
                     // process column only if it was in the query
                     if (selectQueryBuilder.HasDefinedColumns() && !columnsPropertiesFromQuery.Exists(x => x.columnQuery.Equals(columnName)))
@@ -142,11 +132,110 @@ namespace MySqlHelper.Entity
             });
         }
 
-        private bool HasTablesJoin<T2>(PropertyInfo property) where T2 : new()
+        private IList<T> ExecuteMainQuery()
+        {
+            var query = selectQueryBuilder.Build<T>();
+
+            var output = new List<T>();
+
+            using (var exe = new DataBaseExecuteReader(connectionString, query))
+            {
+                while (exe.DataReader.Read())
+                {
+                    var item = new T();
+                    ReadValues(exe, typeof(T), item, selectQueryBuilder.HasJoin());
+                    output.Add(item);
+                }
+            }
+
+            return output;
+        }
+
+        private void ExecuteSubItemsQuery(IList<T> items, (Type type, Type typeSubItem) subItem)
+        {
+            var leftTableColumn = TableAttribute.GetIdColumnNameWithQuotesAndTable<T>();
+            var rightTableColumn = TableAttribute.GetForeignColumnIdName(subItem.typeSubItem, subItem.type);
+
+            var leftTable = TableAttribute.GetTableNameWithQuotes(subItem.type);
+            var rightTable = TableAttribute.GetTableNameWithQuotes(subItem.typeSubItem);
+
+            var selectQueryBuilderSubItem = selectQueryBuilder
+                .CloneAsSelectQueryBuilder()
+                .ClearColumns()
+                .WithColumns($"{rightTable}.*")
+                .WithJoin(JoinEnum.LeftJoin, leftTable, rightTable, (leftTableColumn, rightTableColumn));
+
+            var query = selectQueryBuilderSubItem.Build<T>();
+
+            using (var exe = new DataBaseExecuteReader(connectionString, query))
+            {
+                while (exe.DataReader.Read())
+                {
+                    ReadSubValues(items, subItem, exe);
+                }
+            }
+        }
+
+        private void ReadSubValues(IList<T> items, (Type tableObj, Type typeSubItem) subItemInfo, DataBaseExecuteReader exe)
+        {
+            var subItem = Activator.CreateInstance(subItemInfo.typeSubItem);
+            ReadValues(exe, subItemInfo.typeSubItem, subItem, false);
+
+            // 1 - get the id from subItem
+            var subItemIdProperty =
+                subItemInfo.typeSubItem.GetProperty(TableAttribute.GetForeignColumnIdName(subItemInfo.typeSubItem, subItemInfo.tableObj));
+            var subItemForeignId = subItemIdProperty.GetValue(subItem);
+
+            // 2 - Find the item by subitem id
+            var item = GetItemById(items, subItemForeignId);
+
+            // 3 - add the item in the list
+            AddSubItemInTheList(item, subItem);
+        }
+
+        private void AddSubItemInTheList<T>(T item, object subItem)
+        {
+            var subItemType = subItem.GetType();
+
+            var listSubItems = GetListOfSubItem(item, subItemType);
+            listSubItems.Add(subItem);
+        }
+
+        private IList GetListOfSubItem<T>(T item, Type subItemType)
+        {
+            var properties = typeof(T).GetProperties().ToList();
+
+            foreach (var property in properties)
+            {
+                if (property.PropertyType.IsGenericType
+                    && property.PropertyType.GetGenericTypeDefinition() == typeof(List<>)
+                    && property.PropertyType.GetGenericArguments()[0] == subItemType)
+                    return (IList)property.GetValue(item);
+                //if (Attribute.IsDefined(property, typeof(List<>)))
+                //{
+                //    return property.Name;
+                //}
+            }
+
+            throw new Exception($"The class '{typeof(T).Name}' has no property list of sub-item '{subItemType.Name}'");
+        }
+        private T GetItemById(IList<T> items, object id)
+        {
+            return items.ToList().Find(item =>
+            {
+                var itemIdProperty =
+                    // 1 - get the id from subItem
+                    item.GetType().GetProperty(TableAttribute.GetIdColumnPropertyName(item.GetType()));
+                var itemId = itemIdProperty.GetValue(item);
+                return itemId.Equals(id);
+            });
+        }
+
+        private bool HasTablesJoin(Type type, PropertyInfo property)
         {
             var t = property.PropertyType;
             var methodGetModelColumns = selectQueryBuilder.GetType().GetMethod("ContainsJoinWithTables");
-            var genericMethod = methodGetModelColumns.MakeGenericMethod(typeof(T2), t);
+            var genericMethod = methodGetModelColumns.MakeGenericMethod(type, t);
             return (bool)genericMethod.Invoke(selectQueryBuilder, null);
         }
     }

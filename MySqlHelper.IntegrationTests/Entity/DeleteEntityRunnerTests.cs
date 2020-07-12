@@ -32,7 +32,7 @@ namespace MySqlHelper.IntegrationTests.Entity
             Assert.AreNotEqual(0, book.Id);
 
             var selectBuilder = entityFactory.CreateSelectBuilder<Book>()
-                .WithWhere(new WhereQueryEquals(GetColumnName<Book>(nameof(Book.Id)), book.Id));
+                .WithWhere(new WhereQueryEquals(GetColumnNameWithQuotes<Book>(nameof(Book.Id)), book.Id));
 
 
             var books = selectBuilder.Execute();
@@ -45,7 +45,7 @@ namespace MySqlHelper.IntegrationTests.Entity
 
             // Assert
             selectBuilder = entityFactory.CreateSelectBuilder<Book>()
-                .WithWhere(new WhereQueryEquals(GetColumnName<Book>(nameof(Book.Id)), book.Id));
+                .WithWhere(new WhereQueryEquals(GetColumnNameWithQuotes<Book>(nameof(Book.Id)), book.Id));
 
             books = selectBuilder.Execute();
             Assert.AreEqual(0, books.Count);

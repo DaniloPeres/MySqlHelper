@@ -10,7 +10,8 @@ namespace MySqlHelper.IntegrationTests.Models
     {
         [Key(AutoIncrement = true)]
         public int Id { get; set; }
-        public DateTime Date { get; set; }
+        [ForeignKeyId(typeof(Customer))]
         public int CustomerId { get; set; }
+        public decimal TotalPrice { get; set; }
     }
 }

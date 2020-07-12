@@ -25,14 +25,19 @@ namespace MySqlHelper.Attributes
             Type = type;
         }
 
-        public static string GetColumnName<T>(string property) where T : new()
+        public static string GetColumnNameWithQuotes<T>(string property) where T : new()
         {
-            return $"`{GetColumnNameNoQuotes<T>(property)}`";
+            return GetColumnNameWithQuotes(typeof(T), property);
         }
 
-        public static string GetColumnNameNoQuotes<T>(string property) where T : new()
+        public static string GetColumnNameWithQuotes(Type type, string property)
         {
-            var info = typeof(T).GetProperty(property);
+            return $"`{GetColumnName(type, property)}`";
+        }
+
+        public static string GetColumnName(Type type, string property)
+        {
+            var info = type.GetProperty(property);
 
             if (info != null && Attribute.IsDefined(info, typeof(ColumnAttribute)))
             {
@@ -44,18 +49,18 @@ namespace MySqlHelper.Attributes
             return property;
         }
 
-        public static string GetColumnNameWithTable<T>(string property) where T : new()
+        public static string GetColumnNameWithTable(Type type, string property)
         {
-            var tableName = TableAttribute.GetTableNameWithoutQuotes<T>();
+            var tableName = TableAttribute.GetTableNameWithoutQuotes(type);
 
-            var column = GetColumnNameNoQuotes<T>(property);
-            return $"`{tableName}`.`{column}` `{GetColumnRenameQuery<T>(property)}`";
+            var column = GetColumnName(type, property);
+            return $"`{tableName}`.`{column}` `{GetColumnRenameQuery(type, property)}`";
         }
 
-        public static string GetColumnRenameQuery<T>(string property) where T : new()
+        public static string GetColumnRenameQuery(Type type, string property)
         {
-            var tableName = TableAttribute.GetTableNameWithoutQuotes<T>();
-            var column = GetColumnNameNoQuotes<T>(property);
+            var tableName = TableAttribute.GetTableNameWithoutQuotes(type);
+            var column = GetColumnName(type, property);
             return $"{tableName}_{column}";
         }
     }
