@@ -70,6 +70,11 @@ namespace MySqlHelper.Attributes
             throw new Exception($"The class '{type.Name}' has no attribute 'Table'");
         }
 
+        public static string GetForeignColumnIdNameWithQuotes(Type type, Type typeForeign)
+        {
+            return $"`{GetForeignColumnIdName(type, typeForeign)}`";
+        }
+
         public static string GetForeignColumnIdName(Type type, Type typeForeign)
         {
             var properties = type.GetProperties().ToList();

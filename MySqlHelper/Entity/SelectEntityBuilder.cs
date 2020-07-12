@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using MySqlHelper.Attributes;
@@ -13,7 +14,7 @@ using MySqlHelper.QueryBuilder.Components.WhereQuery;
 
 namespace MySqlHelper.Entity
 {
-    public class SelectEntityBuilder<T> : ISelectQuery<SelectEntityBuilder<T>> where T: new()
+    public class SelectEntityBuilder<T> : ISelectQuery<SelectEntityBuilder<T>> where T : new()
     {
         private readonly string connectionString;
         private readonly SelectQueryBuilder selectQueryBuilder;
@@ -127,6 +128,10 @@ namespace MySqlHelper.Entity
                         return;
 
                     var value = exe.DataReader[columnName];
+
+                    if (property.PropertyType == typeof(bool))
+                        value = String2Bool(value.ToString());
+
                     property.SetValue(item, value, null);
                 }
             });
@@ -151,10 +156,37 @@ namespace MySqlHelper.Entity
             return output;
         }
 
+        private static bool String2Bool(string str)
+        {
+            if (str == "on"
+             || str == "yes"
+             || str == "true"
+            )
+                return true;
+
+            if ((str == "off")
+             || (str == "no")
+             || (str == "false")
+            )
+                return false;
+
+            return atoi(str) == 1;
+        }
+
+        private static int atoi(string value)
+        {
+            int _return;
+            if (value.Contains('x'))
+                int.TryParse(value.Replace("0x", ""), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out _return);
+            else
+                int.TryParse(value, out _return);
+            return _return;
+        }
+
         private void ExecuteSubItemsQuery(IList<T> items, (Type type, Type typeSubItem) subItem)
         {
             var leftTableColumn = TableAttribute.GetIdColumnNameWithQuotesAndTable<T>();
-            var rightTableColumn = TableAttribute.GetForeignColumnIdName(subItem.typeSubItem, subItem.type);
+            var rightTableColumn = TableAttribute.GetForeignColumnIdNameWithQuotes(subItem.typeSubItem, subItem.type);
 
             var leftTable = TableAttribute.GetTableNameWithQuotes(subItem.type);
             var rightTable = TableAttribute.GetTableNameWithQuotes(subItem.typeSubItem);
@@ -164,6 +196,12 @@ namespace MySqlHelper.Entity
                 .ClearColumns()
                 .WithColumns($"{rightTable}.*")
                 .WithJoin(JoinEnum.LeftJoin, leftTable, rightTable, (leftTableColumn, rightTableColumn));
+
+            var whereQueryIsNotNull = new WhereQueryIsNotNull($"{rightTable}.{rightTableColumn}");
+
+            selectQueryBuilderSubItem = selectQueryBuilderSubItem.IsWhereEmpty()
+                ? selectQueryBuilderSubItem.WithWhere(whereQueryIsNotNull)
+                : selectQueryBuilderSubItem.WithWhereAppend(WhereQuerySyntaxEnum.And, whereQueryIsNotNull);
 
             var query = selectQueryBuilderSubItem.Build<T>();
 

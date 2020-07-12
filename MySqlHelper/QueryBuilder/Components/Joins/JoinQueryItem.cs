@@ -4,6 +4,7 @@ using System.Linq;
 
 namespace MySqlHelper.QueryBuilder.Components.Joins
 {
+    [Serializable()]
     internal class JoinQueryItem
     {
         private readonly JoinEnum joinType;

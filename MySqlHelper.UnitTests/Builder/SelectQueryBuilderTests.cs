@@ -274,6 +274,36 @@ namespace MySqlHelper.UnitTests.Builder
         }
 
         [Test]
+        public void GenerateQueryWithColumnIsNullTest()
+        {
+            // Arrange
+            const string queryExpected = "SELECT * FROM `books` WHERE `Price` IS NULL";
+            var selectQueryBuilder = new SelectQueryBuilder()
+                    .WithWhere(new WhereQueryIsNull(GetColumnNameWithQuotes<Book>(nameof(Book.Price))));
+
+            // Act
+            var query = selectQueryBuilder.Build<Book>();
+
+            // Assert
+            Assert.AreEqual(queryExpected, query);
+        }
+
+        [Test]
+        public void GenerateQueryWithColumnIsNotNullTest()
+        {
+            // Arrange
+            const string queryExpected = "SELECT * FROM `books` WHERE NOT `Price` IS NULL";
+            var selectQueryBuilder = new SelectQueryBuilder()
+                    .WithWhere(new WhereQueryIsNotNull(GetColumnNameWithQuotes<Book>(nameof(Book.Price))));
+
+            // Act
+            var query = selectQueryBuilder.Build<Book>();
+
+            // Assert
+            Assert.AreEqual(queryExpected, query);
+        }
+
+        [Test]
         public void GenerateQueryWithJoinTest()
         {
             GenerateQueryWithJoinType(JoinEnum.Join, "JOIN");

@@ -10,9 +10,11 @@ using MySqlHelper.Interfaces;
 using MySqlHelper.QueryBuilder.Components.Joins;
 using MySqlHelper.QueryBuilder.Components.OrderBy;
 using MySqlHelper.QueryBuilder.Components.WhereQuery;
+using MySqlHelper.Utils;
 
 namespace MySqlHelper.QueryBuilder
 {
+    [Serializable()]
     public class SelectQueryBuilder : ISelectQuery<SelectQueryBuilder>, ICloneable
     {
         private readonly List<string> columns = new List<string>();
@@ -76,6 +78,11 @@ namespace MySqlHelper.QueryBuilder
         {
             whereBuilder.WithWhereAppend(syntax, condition, wheres);
             return this;
+        }
+
+        public bool IsWhereEmpty()
+        {
+            return whereBuilder.IsWhereEmpty();
         }
 
         public SelectQueryBuilder WithGroupBy(string column, params string[] columns)
@@ -203,7 +210,7 @@ namespace MySqlHelper.QueryBuilder
 
         public object Clone()
         {
-            return MemberwiseClone();
+            return DeepClone.Clone(this);
         }
 
         private string GenerateGroupBy()

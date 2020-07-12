@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using MySqlHelper.Attributes;
 
 namespace MySqlHelper.QueryBuilder.Components.Joins
 {
+    [Serializable()]
     public class JoinQueryBuilder
     {
         private readonly List<JoinQueryItem> joins = new List<JoinQueryItem>();

@@ -3,6 +3,7 @@ using System.Linq;
 
 namespace MySqlHelper.QueryBuilder.Components.WhereQuery
 {
+    [Serializable()]
     internal class WhereQueryBuilder
     {
         private WhereQueries whereQueries;
@@ -34,6 +35,11 @@ namespace MySqlHelper.QueryBuilder.Components.WhereQuery
                 throw new Exception("The method 'WithWhereAppend' must be used after using the method 'WithWhere'");
 
             whereQueries.AddConditionsGroup(syntax, new WhereQueries(condition, wheres.ToList()));
+        }
+
+        internal bool IsWhereEmpty()
+        {
+            return whereQueries == null;
         }
 
         internal string Build()
