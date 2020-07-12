@@ -35,6 +35,8 @@
   - [Select books with 'LIKE' condition](#select-books-with-like-condition)
   - [Select books with 'between' condition](#select-books-with-between-condition)
   - [Select books with 'IN' condition](#select-books-with-in-condition)
+  - [Select books with column 'IS NULL' condition](#select-books-with-column-is-null-condition)
+  - [Select books with column 'IS NOT NULL' condition](#select-books-with-column-is-not-null-condition)
   - [Select books with 'greater' condition](#select-books-with-greater-condition)
   - [Select books with 'LEFT JOIN' condition](#select-books-with-left-join-condition)
   - [Select books with 'GROUP BY' condition](#select-books-with-group-by-condition)
@@ -456,6 +458,24 @@ var selectQueryBuilder = new SelectQueryBuilder()
 string query = selectQueryBuilder.Build<Book>();
 
 // query is going to be: "SELECT * FROM `books` WHERE `Id` IN (1,2,3)"
+```
+
+#### Select books with column 'IS NULL' condition:
+```csharp
+var selectQueryBuilder = new SelectQueryBuilder()
+  .WithWhere(new WhereQueryIsNull(GetColumnNameWithQuotes<Book>(nameof(Book.Price))));
+string query = selectQueryBuilder.Build<Book>();
+
+// query is going to be: "SELECT * FROM `books` WHERE `Price` IS NULL"
+```
+
+#### Select books with column 'IS NOT NULL' condition:
+```csharp
+var selectQueryBuilder = new SelectQueryBuilder()
+  .WithWhere(new WhereQueryIsNotNull(GetColumnNameWithQuotes<Book>(nameof(Book.Price))));
+string query = selectQueryBuilder.Build<Book>();
+
+// query is going to be: "SELECT * FROM `books` WHERE NOT `Price` IS NULL"
 ```
 
 #### Select books with 'greater' condition:
