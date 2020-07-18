@@ -51,6 +51,7 @@
   - [Key Attribute](#key-attribute)
   - [Foreign Key Model Attribute](#foreign-key-model-attribute)
   - [Foreign Key Id Attribute](#foreign-key-id-attribute)
+  - [Ignore Attribute](#ignore-attribute)
 
 ## Entity Model to MySQL
 
@@ -646,6 +647,16 @@ public Publisher Publisher { get; set; }
 [ForeignKeyId(typeof(Customer))]
 public int CustomerId { get; set; }
 ```
+
+### Ignore Attribute
+<b>Attribute Targets:</b> Property<br/>
+<b>Description:</b> Set this property to not be processed in MySQL Helper<br/>
+<b>Examples:</b>
+```csharp
+[Ignore]
+public Publisher Publisher { get; set; }
+```
+
 
 ## License
 
