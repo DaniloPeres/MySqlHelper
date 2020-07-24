@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace MySqlHelper.QueryBuilder.Components.WhereQuery
 {
-    [Serializable()]
+    [Serializable]
     internal class WhereQueryBuilder
     {
         private WhereQueries whereQueries;

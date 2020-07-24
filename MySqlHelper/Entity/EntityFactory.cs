@@ -36,6 +36,11 @@ namespace MySqlHelper.Entity
             InsertEntity.InsertMultiples(connectionString, entities);
         }
 
+        public void Replace<T>(T entity) where T : new()
+        {
+            ReplaceEntity.Replace(connectionString, entity);
+        }
+
         public void Update<T>(T model) where T : new()
         {
             UpdateEntity.Update(connectionString, model);
@@ -52,24 +57,25 @@ namespace MySqlHelper.Entity
             DataBaseDataReader.ExecuteNonQuery(connectionString, query);
         }
 
-        internal static Dictionary<string, object> GetFieldsWithValues<T>(T entity) where T : new()
+        internal static Dictionary<string, object> GetFieldsWithValues<T>(T entity, bool ignoreAutoIncrementKey) where T : new()
         {
-            return GetFieldsWithValues(entity, typeof(T).GetProperties().ToList());
+            return GetFieldsWithValues(entity, typeof(T).GetProperties().ToList(), ignoreAutoIncrementKey);
         }
 
-        internal static Dictionary<string, object> GetFieldsWithValues<T>(T entity, IList<string> fields) where T : new()
+        internal static Dictionary<string, object> GetFieldsWithValues<T>(T entity, IList<string> fields, bool ignoreAutoIncrementKey) where T : new()
         {
             var properties = typeof(T).GetProperties().Where(x => fields.Contains(x.Name));
-            return GetFieldsWithValues(entity, properties.ToList());
+            return GetFieldsWithValues(entity, properties.ToList(), ignoreAutoIncrementKey);
         }
 
-        internal static Dictionary<string, object> GetFieldsWithValues<T>(T entity, List<PropertyInfo> properties) where T : new()
+        internal static Dictionary<string, object> GetFieldsWithValues<T>(T entity, List<PropertyInfo> properties, bool ignoreAutoIncrementKey) where T : new()
         {
             var output = new Dictionary<string, object>();
             properties.ForEach(property =>
             {
                 if (Attribute.IsDefined(property, typeof(ForeignKeyModelAttribute))
-                || KeyAttribute.IsAutoIncrementKey(property))  // Ignore Auto increment key
+                    || Attribute.IsDefined(property, typeof(IgnoreAttribute))
+                    || (ignoreAutoIncrementKey && KeyAttribute.IsAutoIncrementKey(property)))  // Ignore Auto increment key
                     return;
 
                 var columnName = ColumnAttribute.GetColumnName(typeof(T), property.Name);

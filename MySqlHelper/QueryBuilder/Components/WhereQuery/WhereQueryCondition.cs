@@ -1,7 +1,9 @@
-﻿using MySqlHelper.Attributes;
+﻿using System;
+using MySqlHelper.Attributes;
 
 namespace MySqlHelper.QueryBuilder.Components.WhereQuery
 {
+    [Serializable]
     public abstract class WhereQueryCondition
     {
         internal string Table;

@@ -100,6 +100,9 @@ namespace MySqlHelper.Entity
             var columnsPropertiesFromQuery = selectQueryBuilder.GetQueryPropertiesAndColumns(typeof(T2)).ToList();
             properties.ForEach(property =>
             {
+                if (Attribute.IsDefined(property, typeof(IgnoreAttribute)))
+                    return;
+
                 if (Attribute.IsDefined(property, typeof(ForeignKeyModelAttribute)))
                 {
                     // Read the foreign key item only if there is joins

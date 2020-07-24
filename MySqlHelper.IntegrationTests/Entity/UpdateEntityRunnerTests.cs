@@ -24,7 +24,7 @@ namespace MySqlHelper.IntegrationTests.Entity
             };
             entityFactory.Insert(book);
 
-            // Check auto genereted id
+            // Check auto generated id
             Assert.AreNotEqual(0, book.Id);
 
             var selectBuilder = entityFactory.CreateSelectBuilder<Book>()
@@ -63,7 +63,7 @@ namespace MySqlHelper.IntegrationTests.Entity
             };
             entityFactory.Insert(book);
 
-            // Check auto genereted id
+            // Check auto generated id
             Assert.AreNotEqual(0, book.Id);
 
             var selectBuilder = entityFactory.CreateSelectBuilder<Book>()

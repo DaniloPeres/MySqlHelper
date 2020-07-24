@@ -1,7 +1,9 @@
-﻿using MySqlHelper.Utils;
+﻿using System;
+using MySqlHelper.Utils;
 
 namespace MySqlHelper.QueryBuilder.Components.WhereQuery
 {
+    [Serializable]
     public class WhereQueryBetween : WhereQueryCondition
     {
         public WhereQueryBetween(string column, object betweenFrom, object betweenTo)

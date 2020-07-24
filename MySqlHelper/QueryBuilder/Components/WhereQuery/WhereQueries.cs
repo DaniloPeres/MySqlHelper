@@ -5,7 +5,7 @@ using System.Text;
 
 namespace MySqlHelper.QueryBuilder.Components.WhereQuery
 {
-    [Serializable()]
+    [Serializable]
     internal class WhereQueries
     {
         private readonly WhereQueryCondition condition;

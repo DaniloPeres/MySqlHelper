@@ -1,5 +1,8 @@
-﻿namespace MySqlHelper.QueryBuilder.Components.WhereQuery
+﻿using System;
+
+namespace MySqlHelper.QueryBuilder.Components.WhereQuery
 {
+    [Serializable]
     public class WhereQueryNot<T> : WhereQueryCondition where T : WhereQueryCondition
     {
         private readonly T whereQuery;

@@ -1,8 +1,10 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using MySqlHelper.Utils;
 
 namespace MySqlHelper.QueryBuilder.Components.WhereQuery
 {
+    [Serializable]
     public class WhereQueryIn : WhereQueryCondition
     {
         public WhereQueryIn(string column, params object[] inValues)

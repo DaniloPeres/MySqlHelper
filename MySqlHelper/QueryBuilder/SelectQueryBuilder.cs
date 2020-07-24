@@ -14,7 +14,7 @@ using MySqlHelper.Utils;
 
 namespace MySqlHelper.QueryBuilder
 {
-    [Serializable()]
+    [Serializable]
     public class SelectQueryBuilder : ISelectQuery<SelectQueryBuilder>, ICloneable
     {
         private readonly List<string> columns = new List<string>();
@@ -179,6 +179,9 @@ namespace MySqlHelper.QueryBuilder
 
             properties.ForEach(property =>
             {
+                if (Attribute.IsDefined(property, typeof(IgnoreAttribute)))
+                    return;
+
                 if (Attribute.IsDefined(property, typeof(ForeignKeyModelAttribute)))
                 {
                     var t = property.PropertyType;

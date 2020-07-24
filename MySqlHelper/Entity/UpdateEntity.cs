@@ -10,12 +10,12 @@ namespace MySqlHelper.Entity
     {
         public static void Update<T>(string connectionString, T entity) where T : new()
         {
-            Update(connectionString, entity, EntityFactory.GetFieldsWithValues(entity));
+            Update(connectionString, entity, EntityFactory.GetFieldsWithValues(entity, true));
         }
 
         public static void Update<T>(string connectionString, T entity, params string[] fields) where T : new()
         {
-            Update(connectionString, entity, EntityFactory.GetFieldsWithValues(entity, fields.ToList()));
+            Update(connectionString, entity, EntityFactory.GetFieldsWithValues(entity, fields.ToList(), true));
         }
 
         private static void Update<T>(string connectionString, T entity, Dictionary<string, object> fieldsWithValues) where T : new()

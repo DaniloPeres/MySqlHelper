@@ -4,6 +4,7 @@ using System.Text;
 
 namespace MySqlHelper.QueryBuilder.Components.WhereQuery
 {
+    [Serializable]
     public class WhereQueryIsNotNull : WhereQueryCondition
     {
         public WhereQueryIsNotNull(string column)

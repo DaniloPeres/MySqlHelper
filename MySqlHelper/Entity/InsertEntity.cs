@@ -19,7 +19,7 @@ namespace MySqlHelper.Entity
             entities.ToList().ForEach(entity =>
             {
                 var insertBuilder = new InsertQueryBuilder()
-                    .WithFields(EntityFactory.GetFieldsWithValues(entity));
+                    .WithFields(EntityFactory.GetFieldsWithValues(entity, true));
 
                 var query = insertBuilder.Build<T>();
                 DataBaseDataReader.ExecuteNonQuery(connectionString, query);
