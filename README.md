@@ -19,6 +19,7 @@
   - [Insert multiple registers by entity models](#insert-multiple-registers-by-entity-models)
   - [Update a register by entity model](#update-a-register-by-entity-model)
   - [Update register only specific fields by entity model](#update-register-only-specific-fields-by-entity-model)
+  - [Replace a register by entity model](#replace-a-register-by-entity-model)
   - [Delete a register by entity model](#delete-a-register-by-entity-model)
   - [Select Item with sub-items](#select-item-with-sub-items)
 - [Building Queries](#building-queries)
@@ -42,6 +43,7 @@
   - [Select books with 'GROUP BY' condition](#select-books-with-group-by-condition)
   - [Select books with 'ORDER BY' condition](#select-books-with-order-by-condition)
   - [Insert query builder](#insert-query-builder)
+  - [Replace query builder](#replace-query-builder)
   - [Delete all books](#delete-all-books) 
   - [Delete the book by ID](#delete-the-book-by-id)
   - [Update query builder](#update-query-builder)
@@ -267,6 +269,23 @@ book.Title = "Book Test update";
 
 // Update only the title in the database
 entityFactory.Update(book, nameof(Book.Title));
+```
+
+### Replace
+#### Replace a register by entity model:
+
+```csharp
+var book = new Book
+{
+    Id = 1,
+    Title = "Book 1",
+    Price = 9.99m,
+    PublisherId = publisher.Id,
+    Publisher = publisher
+}
+
+var entityFactory = new EntityFactory(<connectionString>);
+entityFactory.Replace(book);
 ```
 
 ### Delete a register by entity model:
@@ -541,6 +560,22 @@ var insertQueryBuilder = new InsertQueryBuilder()
 string query = insertQueryBuilder.Build<Book>();
 
 // query is going to be: "INSERT INTO `books` (`Title`, `Price`) VALUES ('Essential C#', 20.99)"
+```
+
+### Replace query builder
+```csharp
+var fields = new Dictionary<string, object>
+{
+    { ColumnAttribute.GetColumnNameWithQuotes<Book>(nameof(Book.Id)), 1 },
+    { ColumnAttribute.GetColumnNameWithQuotes<Book>(nameof(Book.Title)), "Essential C#" },
+    { ColumnAttribute.GetColumnNameWithQuotes<Book>(nameof(Book.Price)), 20.99d }
+};
+var insertQueryBuilder = new ReplaceQueryBuilder()
+    .WithFields(fields);
+
+string query = insertQueryBuilder.Build<Book>();
+
+// query is going to be: "REPLACE INTO `books` (`Id`, `Title`, `Price`) VALUES (1, 'Essential C#', 20.99)"
 ```
 
 ### Delete
