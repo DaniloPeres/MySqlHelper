@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using MySqlHelper.Attributes;
 using MySqlHelper.Entity;
 using MySqlHelper.IntegrationTests.Configuration;
 using MySqlHelper.IntegrationTests.Models;
@@ -53,6 +54,19 @@ namespace MySqlHelper.IntegrationTests.Entity
 
             Assert.AreEqual(1, books.Count);
             Assert.AreEqual(1, books[0].Id);
+        }
+
+        [Test]
+        public void SelectRegisterByIdAndOnly1Column()
+        {
+            var selectBuilder = entityFactory
+                .CreateSelectBuilder<Book>()
+                .WithColumns(GetColumnName(typeof(Book), nameof(Book.Price)))
+                .WithWhere(new WhereQueryEquals(GetColumnNameWithQuotes<Book>(nameof(Book.Id)), 1));
+            var books = selectBuilder.Execute();
+
+            Assert.AreEqual(1, books.Count);
+            Assert.AreEqual(9.99m, books[0].Price);
         }
 
         [Test]

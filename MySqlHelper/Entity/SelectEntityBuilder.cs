@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
+using MySql.Data.Types;
 using MySqlHelper.Attributes;
 using MySqlHelper.DataBase;
 using MySqlHelper.Interfaces;
@@ -127,13 +128,18 @@ namespace MySqlHelper.Entity
                         : ColumnAttribute.GetColumnName(type, property.Name);
 
                     // process column only if it was in the query
-                    if (selectQueryBuilder.HasDefinedColumns() && !columnsPropertiesFromQuery.Exists(x => x.columnQuery.Equals(columnName)))
+                    if (!selectQueryBuilder.HasDefinedColumn(columnName))
                         return;
 
                     var value = exe.DataReader[columnName];
 
                     if (property.PropertyType == typeof(bool))
                         value = String2Bool(value.ToString());
+                    else if (value.GetType() == typeof(MySqlDateTime))
+                    {
+                        var valueMyDateTime = (MySqlDateTime)value;
+                        value = valueMyDateTime.IsValidDateTime ? valueMyDateTime.Value : default;
+                    }
 
                     property.SetValue(item, value, null);
                 }
