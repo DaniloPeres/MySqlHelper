@@ -12,6 +12,7 @@ using MySqlHelper.QueryBuilder;
 using MySqlHelper.QueryBuilder.Components.Joins;
 using MySqlHelper.QueryBuilder.Components.OrderBy;
 using MySqlHelper.QueryBuilder.Components.WhereQuery;
+using MySqlHelper.Utils;
 
 namespace MySqlHelper.Entity
 {
@@ -107,7 +108,7 @@ namespace MySqlHelper.Entity
                 if (Attribute.IsDefined(property, typeof(ForeignKeyModelAttribute)))
                 {
                     // Read the foreign key item only if there is joins
-                    if (!hasJoin || !HasTablesJoin(type, property))
+                    if (property.PropertyType.IsList() || !hasJoin || !HasTablesJoin(type, property))
                         return;
 
                     var foreignKeyItem = Activator.CreateInstance(property.PropertyType);
@@ -248,23 +249,34 @@ namespace MySqlHelper.Entity
             listSubItems.Add(subItem);
         }
 
-        private IList GetListOfSubItem<T>(T item, Type subItemType)
+        private IList GetListOfSubItem<T2>(T2 item, Type subItemType)
         {
-            var properties = typeof(T).GetProperties().ToList();
+            var properties = typeof(T2).GetProperties().ToList();
 
             foreach (var property in properties)
             {
                 if (property.PropertyType.IsGenericType
-                    && property.PropertyType.GetGenericTypeDefinition() == typeof(List<>)
+                    && property.PropertyType.IsList()
                     && property.PropertyType.GetGenericArguments()[0] == subItemType)
-                    return (IList)property.GetValue(item);
+                {
+                    var value = (IList)property.GetValue(item);
+                    if (value == null)
+                    {
+                        var listGenericType = typeof(List<>);
+                        var genericListType = listGenericType.MakeGenericType(subItemType);
+                        value = (IList)Activator.CreateInstance(genericListType);
+                        property.SetValue(item, value);
+                    }
+
+                    return value;
+                }
                 //if (Attribute.IsDefined(property, typeof(List<>)))
                 //{
                 //    return property.Name;
                 //}
             }
 
-            throw new Exception($"The class '{typeof(T).Name}' has no property list of sub-item '{subItemType.Name}'");
+            throw new Exception($"The class '{typeof(T2).Name}' has no property list of sub-item '{subItemType.Name}'");
         }
         private T GetItemById(IList<T> items, object id)
         {

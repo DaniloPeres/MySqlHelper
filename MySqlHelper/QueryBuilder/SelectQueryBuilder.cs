@@ -185,6 +185,8 @@ namespace MySqlHelper.QueryBuilder
                 if (Attribute.IsDefined(property, typeof(ForeignKeyModelAttribute)))
                 {
                     var t = property.PropertyType;
+                    if (t.IsList())
+                        return; // Do not process ForeignKeyModel list. It will get by sub-items
                     if (t.IsGenericType)
                         GetQueryPropertiesAndColumns(t = t.GetGenericArguments()[0]);
                     var methodGetModelColumns = this.GetType().GetMethod("GetQueryPropertiesAndColumns");
