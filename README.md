@@ -5,7 +5,7 @@
 # MySqlHelper
 <b>MySQL Helper</b> is an extension of MySQL to build queries or using entity models to interact with the database
 
-Nuget package
+## Nuget package
 There is a nuget package avaliable here https://www.nuget.org/packages/DaniloPeres.MySqlHelper/.
 
 ## Table of Contents
