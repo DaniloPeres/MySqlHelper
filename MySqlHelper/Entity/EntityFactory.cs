@@ -26,14 +26,14 @@ namespace MySqlHelper.Entity
             DeleteEntity.Delete(connectionString, model);
         }
 
-        public void Insert<T>(T entity) where T : new()
+        public void Insert<T>(T entity, bool getLastId = true) where T : new()
         {
-            InsertEntity.Insert(connectionString, entity);
+            InsertEntity.Insert(connectionString, entity, getLastId);
         }
 
-        public void InsertMultiples<T>(IList<T> entities) where T : new()
+        public void InsertMultiples<T>(IList<T> entities, bool getLastId = true) where T : new()
         {
-            InsertEntity.InsertMultiples(connectionString, entities);
+            InsertEntity.InsertMultiples(connectionString, entities, getLastId);
         }
 
         public void Replace<T>(T entity) where T : new()

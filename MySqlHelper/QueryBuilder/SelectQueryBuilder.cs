@@ -205,7 +205,7 @@ namespace MySqlHelper.QueryBuilder
 
         public bool HasDefinedColumn(string columnName)
         {
-            return !columns.Any() || columns.Exists(x => x.Contains("*") || x.Contains(columnName));
+            return !columns.Any() || columns.Exists(x => x.Contains("*") || x == columnName || x.EndsWith($".{columnName}"));
         }
 
         public SelectQueryBuilder CloneAsSelectQueryBuilder()

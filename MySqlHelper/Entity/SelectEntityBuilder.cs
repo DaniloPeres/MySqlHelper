@@ -96,7 +96,7 @@ namespace MySqlHelper.Entity
             return items;
         }
 
-        public void ReadValues<T2>(DataBaseExecuteReader exe, Type type, T2 item, bool hasJoin) where T2 : new()
+        public void ReadValues<T2>(DataBaseExecuteReader exe, Type type, T2 item, bool hasJoin, bool readingSubItems) where T2 : new()
         {
             var properties = type.GetProperties().ToList();
             var columnsPropertiesFromQuery = selectQueryBuilder.GetQueryPropertiesAndColumns(typeof(T2)).ToList();
@@ -117,7 +117,7 @@ namespace MySqlHelper.Entity
                     var genericMethod = methodGetModelColumns.MakeGenericMethod(t);
                     object[] args =
                     {
-                        exe, t, foreignKeyItem, hasJoin
+                        exe, t, foreignKeyItem, hasJoin, readingSubItems
                     };
                     genericMethod.Invoke(this, args);
                     property.SetValue(item, foreignKeyItem);
@@ -129,7 +129,7 @@ namespace MySqlHelper.Entity
                         : ColumnAttribute.GetColumnName(type, property.Name);
 
                     // process column only if it was in the query
-                    if (!selectQueryBuilder.HasDefinedColumn(columnName))
+                    if (!readingSubItems && !selectQueryBuilder.HasDefinedColumn(columnName))
                         return;
 
                     var value = exe.DataReader[columnName];
@@ -140,11 +140,22 @@ namespace MySqlHelper.Entity
                     {
                         var valueMyDateTime = (MySqlDateTime)value;
                         value = valueMyDateTime.IsValidDateTime ? valueMyDateTime.Value : default;
-                    }
-
+                    } else if (value.GetType() == typeof(System.DBNull))
+                        value = GetDefault(property.PropertyType);
+                    
                     property.SetValue(item, value, null);
                 }
             });
+        }
+
+        public object GetDefault(Type t)
+        {
+            return this.GetType().GetMethod("GetDefaultGeneric").MakeGenericMethod(t).Invoke(this, null);
+        }
+
+        public T GetDefaultGeneric<T>()
+        {
+            return default(T);
         }
 
         private IList<T> ExecuteMainQuery()
@@ -158,7 +169,7 @@ namespace MySqlHelper.Entity
                 while (exe.DataReader.Read())
                 {
                     var item = new T();
-                    ReadValues(exe, typeof(T), item, selectQueryBuilder.HasJoin());
+                    ReadValues(exe, typeof(T), item, selectQueryBuilder.HasJoin(), false);
                     output.Add(item);
                 }
             }
@@ -227,7 +238,7 @@ namespace MySqlHelper.Entity
         private void ReadSubValues(IList<T> items, (Type tableObj, Type typeSubItem) subItemInfo, DataBaseExecuteReader exe)
         {
             var subItem = Activator.CreateInstance(subItemInfo.typeSubItem);
-            ReadValues(exe, subItemInfo.typeSubItem, subItem, false);
+            ReadValues(exe, subItemInfo.typeSubItem, subItem, false, true);
 
             // 1 - get the id from subItem
             var subItemIdProperty =
@@ -257,7 +268,8 @@ namespace MySqlHelper.Entity
             {
                 if (property.PropertyType.IsGenericType
                     && property.PropertyType.IsList()
-                    && property.PropertyType.GetGenericArguments()[0] == subItemType)
+                    && property.PropertyType.GetGenericArguments()[0] == subItemType
+                    && item != null)
                 {
                     var value = (IList)property.GetValue(item);
                     if (value == null)

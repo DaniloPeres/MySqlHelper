@@ -200,8 +200,8 @@ namespace MySqlHelper.IntegrationTests.Entity
 
         private void InsertDataForTests()
         {
-            entityFactory.InsertMultiples(publishers);
-            entityFactory.InsertMultiples(books);
+            entityFactory.InsertMultiples(publishers, false);
+            entityFactory.InsertMultiples(books, false);
         }
     }
 }

@@ -1,15 +1,10 @@
 ﻿
-using MySqlHelper.Attributes;
 using MySqlHelper.Entity;
 using MySqlHelper.IntegrationTests.Configuration;
 using MySqlHelper.IntegrationTests.Models;
-using MySqlHelper.QueryBuilder.Components.Joins;
-using MySqlHelper.QueryBuilder.Components.OrderBy;
 using NUnit.Framework;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using MySqlHelper.IntegrationTests.Helper;
 
 namespace MySqlHelper.IntegrationTests.Entity
@@ -18,7 +13,7 @@ namespace MySqlHelper.IntegrationTests.Entity
     public class SelectEntityRunnerMultipleSubItemsTests
     {
         private EntityFactory entityFactory;
-        private List<Customer> customers;
+        private List<Customer> customersInternal;
 
         [SetUp]
         public void SetUp()
@@ -43,17 +38,17 @@ namespace MySqlHelper.IntegrationTests.Entity
             var customers = selectBuilder.Execute().ToList();
 
             // Assert
-            Assert.AreEqual(this.customers.Count, customers.Count);
+            Assert.AreEqual(customersInternal.Count, customers.Count);
             for (var i = 0; i < customers.Count; i++)
             {
-                Assert.True(Comparer.IsSameCustomer(this.customers[i], customers[i]));
+                Assert.True(Comparer.IsSameCustomer(customersInternal[i], customers[i]));
             }
         }
 
 
         private void SetDefaultRegisters()
         {
-            customers = new List<Customer>
+            customersInternal = new List<Customer>
             {
                 new Customer
                 {
@@ -106,11 +101,11 @@ namespace MySqlHelper.IntegrationTests.Entity
 
         private void InsertDataForTests()
         {
-            entityFactory.InsertMultiples(customers);
+            entityFactory.InsertMultiples(customersInternal, false);
 
             var orders = new List<Order>();
-            customers.ForEach(x => orders.AddRange(x.Orders));
-            entityFactory.InsertMultiples(orders);
+            customersInternal.ForEach(x => orders.AddRange(x.Orders));
+            entityFactory.InsertMultiples(orders, false);
         }
     }
 }
