@@ -1,4 +1,6 @@
-﻿using MySqlHelper.Attributes;
+﻿using CSharpFunctionalExtensions;
+using MySql.Data.MySqlClient;
+using MySqlHelper.Attributes;
 using MySqlHelper.DataBase;
 using System;
 using System.Collections.Generic;
@@ -55,6 +57,16 @@ namespace MySqlHelper.Entity
         public void ExecuteNonQuery(string query)
         {
             DataBaseDataReader.ExecuteNonQuery(connectionString, query);
+        }
+
+        public void ExecuteNonQuery(string query, List<MySqlParameter> parameters)
+        {
+            DataBaseDataReader.ExecuteNonQuery(connectionString, query, parameters);
+        }
+
+        public Result<T> GetSelectValue<T>(string query, List<MySqlParameter> parameters = null)
+        {
+            return DataBaseDataReader.GetSelectValue<T>(connectionString, query, parameters);
         }
 
         internal static Dictionary<string, object> GetFieldsWithValues<T>(T entity, bool ignoreAutoIncrementKey) where T : new()
