@@ -123,8 +123,8 @@ var selectBuilder = entityFactory
    .CreateSelectBuilder<Book>()
    .WithJoin(
           JoinEnum.LeftJoin,
-          TableAttribute.GetTableName<Book>(),
-          TableAttribute.GetTableName<Publisher>(),
+          TableAttribute.GetTableNameWithQuotes<Book>(),
+          TableAttribute.GetTableNameWithQuotes<Publisher>(),
           (ColumnAttribute.GetColumnName(typeof(Book), nameof(Book.PublisherId)), ColumnAttribute.GetColumnName(typeof(Publisher), nameof(Publisher.Id)))));
 IList<Book> books = selectBuilder.Execute();
 ```
@@ -139,8 +139,8 @@ var selectBuilder = entityFactory
    .WithColumns<Publisher>(ColumnAttribute.GetColumnName(typeof(Publisher), nameof(Publisher.Name)))
    .WithJoin(
           JoinEnum.LeftJoin,
-          TableAttribute.GetTableName<Book>(),
-          TableAttribute.GetTableName<Publisher>(),
+          TableAttribute.GetTableNameWithQuotes<Book>(),
+          TableAttribute.GetTableNameWithQuotes<Publisher>(),
           (ColumnAttribute.GetColumnName(typeof(Book), nameof(Book.PublisherId)), ColumnAttribute.GetColumnName(typeof(Publisher), nameof(Publisher.Id)))));
 IList<Book> books = selectBuilder.Execute();
 ```
@@ -163,8 +163,8 @@ var selectBuilder = entityFactory
    .CreateSelectBuilder<Book>()
    .WithJoin(
        JoinEnum.LeftJoin,
-       TableAttribute.GetTableName<Book>(),
-       TableAttribute.GetTableName<Publisher>(),
+       TableAttribute.GetTableNameWithQuotes<Book>(),
+       TableAttribute.GetTableNameWithQuotes<Publisher>(),
        (ColumnAttribute.GetColumnName(typeof(Book), nameof(Book.PublisherId)), ColumnAttribute.GetColumnName(typeof(Publisher), nameof(Publisher.Id))))
    .WithWhere<Publisher>(new WhereQueryEquals(ColumnAttribute.GetColumnName(typeof(Publisher), nameof(Publisher.Name)), "Publisher Name"));
 IList<Book> books = selectBuilder.Execute();
@@ -517,8 +517,8 @@ var selectQueryBuilder = new SelectQueryBuilder()
   .WithColumns<Publisher>(ColumnAttribute.GetColumnName(typeof(Publisher), nameof(Publisher.Name)))
   .WithJoin(
       JoinEnum.LeftJoin,
-      TableAttribute.GetTableName<Book>(),
-      TableAttribute.GetTableName<Publisher>(),
+      TableAttribute.GetTableNameWithQuotes<Book>(),
+      TableAttribute.GetTableNameWithQuotes<Publisher>(),
       (ColumnAttribute.GetColumnName(typeof(Book), nameof(Book.PublisherId)), ColumnAttribute.GetColumnName(typeof(Publisher), nameof(Publisher.Id))))
   .WithWhere<Book>(new WhereQueryGreaterThan(ColumnAttribute.GetColumnName(typeof(Book), nameof(Book.Price)), 100));
 string query = selectQueryBuilder.Build<Book>();
