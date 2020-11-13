@@ -69,6 +69,11 @@ namespace MySqlHelper.Entity
             return DataBaseDataReader.GetSelectValue<T>(connectionString, query, parameters);
         }
 
+        public ulong GetLastInsertId()
+        {
+            return DataBaseDataReader.GetLastInsertId(connectionString);
+        }
+
         internal static Dictionary<string, object> GetFieldsWithValues<T>(T entity, bool ignoreAutoIncrementKey) where T : new()
         {
             return GetFieldsWithValues(entity, typeof(T).GetProperties().ToList(), ignoreAutoIncrementKey);
