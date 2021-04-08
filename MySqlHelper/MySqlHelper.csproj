@@ -4,14 +4,14 @@
     <TargetFramework>netstandard2.1</TargetFramework>
     <Authors>Danilo Peres</Authors>
     <Description>MySQL Helper to build queries or using entity models to interact with the database.</Description>
-    <Copyright>Copyright 2020 Danilo Peres</Copyright>
+    <Copyright>Copyright 2021 Danilo Peres</Copyright>
     <PackageIcon>MySQL_Helper_Logo_256.png</PackageIcon>
     <RepositoryUrl>https://github.com/DaniloPeres/MySqlHelper</RepositoryUrl>
     <PackageTags>MySQL, Helper, extension, entity framework, query generator, MySQL Hlper</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <PackageId>DaniloPeres.MySqlHelper</PackageId>
-    <Version>1.0.6</Version>
+    <Version>1.0.7</Version>
   </PropertyGroup>
 
   <ItemGroup>

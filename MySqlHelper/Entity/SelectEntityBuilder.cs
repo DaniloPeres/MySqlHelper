@@ -242,7 +242,7 @@ namespace MySqlHelper.Entity
 
             // 1 - get the id from subItem
             var subItemIdProperty =
-                subItemInfo.typeSubItem.GetProperty(TableAttribute.GetForeignColumnIdName(subItemInfo.typeSubItem, subItemInfo.tableObj));
+                subItemInfo.typeSubItem.GetProperty(TableAttribute.GetForeignPropertyName(subItemInfo.typeSubItem, subItemInfo.tableObj));
             var subItemForeignId = subItemIdProperty.GetValue(subItem);
 
             // 2 - Find the item by subitem id

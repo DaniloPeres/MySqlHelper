@@ -77,6 +77,16 @@ namespace MySqlHelper.Attributes
 
         public static string GetForeignColumnIdName(Type type, Type typeForeign)
         {
+            return ColumnAttribute.GetColumnName(type, GetForeignPropertyName(type, typeForeign));
+        }
+
+        public static string GetForeignPropertyName(Type type, Type typeForeign)
+        {
+            return GetForeignProperty(type, typeForeign).Name;
+        }
+
+        private static PropertyInfo GetForeignProperty(Type type, Type typeForeign)
+        {
             var properties = type.GetProperties().ToList();
 
             foreach (var property in properties)
@@ -84,7 +94,7 @@ namespace MySqlHelper.Attributes
                 if (property.GetCustomAttribute(typeof(ForeignKeyIdAttribute), true) is ForeignKeyIdAttribute foreignKeyIdAttribute
                     && foreignKeyIdAttribute.ForeignType == typeForeign)
                 {
-                    return ColumnAttribute.GetColumnName(type, property.Name);
+                    return property;
                 }
             }
 
